@@ -102,4 +102,29 @@ export default defineSchema({
   })
     .index("by_user_read", ["userId", "isRead"])
     .index("by_user", ["userId"]),
+    // Add this to your schema
+notifications: defineTable({
+  userId: v.id("users"),
+  title: v.string(),
+  message: v.string(),
+  priority: v.union(v.literal("high"), v.literal("medium"), v.literal("low")),
+  type: v.union(v.literal("email"), v.literal("whatsapp"), v.literal("system")),
+  data: v.optional(v.any()),
+  read: v.boolean(),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+})
+  .index("by_user_read", ["userId", "read"])
+  .index("by_user", ["userId"]),
+
+  // Add analytics table
+analytics: defineTable({
+  userId: v.id("users"),
+  data: v.any(),
+  period: v.number(),
+  createdAt: v.number(),
+})
+  .index("by_user", ["userId"])
+  .index("by_user_date", ["userId", "createdAt"]),
+  
 });

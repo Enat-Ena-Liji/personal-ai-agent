@@ -1,79 +1,58 @@
-import { auth } from "@clerk/nextjs/server";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { Sparkles, Shield, Zap, Users } from "lucide-react";
+"use client";
 
-export default async function Home() {
-  const { userId } = await auth();
+import { useUser } from "@/hooks/useUser";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Loader2 } from "lucide-react";
+import { BriefingCard } from "@/components/BriefingCard";
+import ConnectGmail from "@/components/ConnectGmail";
+import ConnectWhatsApp from "@/components/ConnectWhatsApp";
 
-  if (userId) {
-    redirect("/dashboard");
+export default function DashboardPage() {
+  const { user, credits, isLoaded, isSignedIn } = useUser();
+  const platforms = useQuery(api.platforms.getPlatforms);
+
+  if (!isLoaded || platforms === undefined) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+  if (!isSignedIn) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="flex justify-center mb-6">
-            <div className="p-3 bg-blue-100 rounded-2xl">
-              <Sparkles className="w-12 h-12 text-blue-600" />
-            </div>
-          </div>
-          
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Your AI Personal Agent
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-            Connect Gmail, WhatsApp, Calendar, and more. Get AI-powered briefings,
-            alerts, summaries, and smart replies—all in one place.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/sign-up"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
-            >
-              Get Started Free
-            </Link>
-            <Link
-              href="/sign-in"
-              className="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-8 rounded-lg border border-gray-300 transition duration-200"
-            >
-              Sign In
-            </Link>
-          </div>
-        </div>
-
-        {/* Features Grid */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <FeatureCard 
-            icon={<Zap className="w-6 h-6 text-blue-600" />}
-            title="Real-time Insights"
-            description="Get instant briefings and summaries from all your connected platforms."
-          />
-          <FeatureCard 
-            icon={<Shield className="w-6 h-6 text-blue-600" />}
-            title="Secure & Private"
-            description="Enterprise-grade security with Clerk authentication and data encryption."
-          />
-          <FeatureCard 
-            icon={<Users className="w-6 h-6 text-blue-600" />}
-            title="All-in-One Dashboard"
-            description="Manage Gmail, WhatsApp, Calendar, and more from a single interface."
-          />
+          <p className="text-gray-600">Please sign in to view your dashboard.</p>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  const isGmailConnected = platforms?.some(p => p.platform === "gmail" && p.isConnected) || false;
+  const isWhatsAppConnected = platforms?.some(p => p.platform === "whatsapp" && p.isConnected) || false;
+
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-      <div className="flex justify-center mb-4">{icon}</div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">
+          Welcome back, {user?.name || "User"}! 👋
+        </h1>
+        <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">
+          <span className="text-sm text-blue-600">Credits:</span>
+          <span className="font-bold text-blue-700">{credits}</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <ConnectGmail isConnected={isGmailConnected} />
+        <ConnectWhatsApp isConnected={isWhatsAppConnected} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        <BriefingCard />
+      </div>
     </div>
   );
 }
