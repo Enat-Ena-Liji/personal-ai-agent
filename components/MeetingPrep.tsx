@@ -1,178 +1,261 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Loader2, TrendingUp, Clock, Users, Calendar, AlertCircle, CheckCircle } from "lucide-react";
+import { useState } from "react";
+import { Loader2, FileText, Users, Clock, List, BookOpen, Lightbulb, Calendar, User, Target, MessageSquare } from "lucide-react";
 
-export function CalendarAnalytics() {
-  const [analytics, setAnalytics] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+interface AgendaItem {
+  topic: string;
+  duration: number;
+  presenter: string;
+}
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, []);
+interface MeetingAgenda {
+  title: string;
+  objectives: string[];
+  topics: AgendaItem[];
+  preparation: string[];
+  questions: string[];
+  materials: string[];
+}
 
-  const fetchAnalytics = async () => {
+export function MeetingPrep() {
+  const [title, setTitle] = useState("");
+  const [participants, setParticipants] = useState("");
+  const [context, setContext] = useState("");
+  const [duration, setDuration] = useState(60);
+  const [agenda, setAgenda] = useState<MeetingAgenda | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const generateAgenda = async () => {
+    if (!title || !participants) {
+      setError("Please fill in meeting title and participants");
+      return;
+    }
+
     setLoading(true);
+    setError(null);
+    
     try {
-      const response = await fetch("/api/calendar/analytics?days=30");
+      const response = await fetch("/api/calendar/prep", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          meetingTitle: title,
+          participants: participants.split(",").map(p => p.trim()),
+          context: context || "General meeting discussion",
+          durationMinutes: duration,
+        }),
+      });
+
       const data = await response.json();
+      
       if (data.success) {
-        setAnalytics(data.analytics);
+        setAgenda(data.agenda);
+      } else {
+        setError(data.error || "Failed to generate agenda");
+        // Use fallback agenda
+        setAgenda(getFallbackAgenda(title, participants.split(",").map(p => p.trim())));
       }
     } catch (error) {
-      console.error("Failed to fetch analytics:", error);
+      console.error("Failed to generate agenda:", error);
+      setError("Failed to generate agenda. Using fallback.");
+      setAgenda(getFallbackAgenda(title, participants.split(",").map(p => p.trim())));
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    );
-  }
-
-  if (!analytics) {
-    return (
-      <div className="text-center p-8 text-gray-500">
-        <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-        <p>No analytics data available</p>
-        <p className="text-sm">Connect your calendar and schedule some meetings</p>
-      </div>
-    );
-  }
+  const getFallbackAgenda = (title: string, participants: string[]): MeetingAgenda => {
+    return {
+      title: title || "Team Meeting",
+      objectives: [
+        "Review current project status",
+        "Discuss key challenges and blockers",
+        "Define next steps and action items",
+      ],
+      topics: [
+        { topic: "Opening & Context Setting", duration: 5, presenter: participants[0] || "Organizer" },
+        { topic: "Project Status Review", duration: 15, presenter: "Team Lead" },
+        { topic: "Discussion & Problem Solving", duration: 20, presenter: "All Participants" },
+        { topic: "Action Items & Next Steps", duration: 10, presenter: "All Participants" },
+        { topic: "Q&A & Closing", duration: 5, presenter: "Organizer" },
+      ],
+      preparation: [
+        "Review previous meeting notes",
+        "Prepare project updates",
+        "Bring relevant documents and metrics",
+      ],
+      questions: [
+        "What are the main challenges we're facing?",
+        "What resources do we need to move forward?",
+        "What's our priority for the next sprint?",
+      ],
+      materials: [
+        "Project dashboard",
+        "Current sprint metrics",
+        "Previous meeting notes",
+      ],
+    };
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          icon={<Calendar className="w-5 h-5 text-blue-500" />}
-          title="Total Meetings"
-          value={analytics.totalMeetings}
-          subtitle="Last 30 days"
-        />
-        <StatCard
-          icon={<Clock className="w-5 h-5 text-green-500" />}
-          title="Avg Duration"
-          value={`${analytics.averageDuration} min`}
-          subtitle="Per meeting"
-        />
-        <StatCard
-          icon={<TrendingUp className="w-5 h-5 text-purple-500" />}
-          title="Productivity Score"
-          value={`${analytics.productivityScore}%`}
-          subtitle="Based on efficiency"
-        />
-        <StatCard
-          icon={<Users className="w-5 h-5 text-orange-500" />}
-          title="Meeting Types"
-          value={Object.keys(analytics.meetingTypes).length}
-          subtitle="Different categories"
-        />
-      </div>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
+        <FileText className="w-5 h-5 text-blue-600" />
+        AI Meeting Prep
+      </h3>
 
-      {/* Meeting Types Distribution */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h4 className="font-semibold text-gray-900 mb-4">Meeting Distribution</h4>
-        <div className="space-y-2">
-          {Object.entries(analytics.meetingTypes).map(([type, count]) => (
-            <div key={type} className="flex items-center gap-3">
-              <span className="text-sm text-gray-600 w-24">{type}</span>
-              <div className="flex-1 bg-gray-100 rounded-full h-2">
-                <div
-                  className="bg-blue-600 rounded-full h-2"
-                  style={{
-                    width: `${(count / analytics.totalMeetings) * 100}%`,
-                  }}
-                />
-              </div>
-              <span className="text-sm font-medium text-gray-700">{count}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Trends */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h4 className="font-semibold text-gray-900 mb-4">Meeting Trends</h4>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm text-gray-500">Weekly</p>
-            <p className="text-2xl font-bold text-blue-600">
-              {analytics.trends.weekly.toFixed(1)}
-            </p>
-            <p className="text-xs text-gray-400">meetings/week</p>
-          </div>
-          <div className="text-center p-3 bg-green-50 rounded-lg">
-            <p className="text-sm text-gray-500">Monthly</p>
-            <p className="text-2xl font-bold text-green-600">
-              {analytics.trends.monthly}
-            </p>
-            <p className="text-xs text-gray-400">meetings/month</p>
-          </div>
-          <div className="text-center p-3 bg-purple-50 rounded-lg">
-            <p className="text-sm text-gray-500">Quarterly</p>
-            <p className="text-2xl font-bold text-purple-600">
-              {analytics.trends.quarterly}
-            </p>
-            <p className="text-xs text-gray-400">meetings/quarter</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Peak Hours */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h4 className="font-semibold text-gray-900 mb-4">Peak Meeting Hours</h4>
-        <div className="flex items-end gap-1 h-32">
-          {analytics.peakHours.map((hour: any, index: number) => (
-            <div
-              key={index}
-              className="flex-1 flex flex-col items-center"
-            >
-              <div
-                className="w-full bg-blue-600 rounded-t"
-                style={{
-                  height: `${(hour.count / Math.max(...analytics.peakHours.map((h: any) => h.count))) * 100}%`,
-                }}
-              />
-              <span className="text-xs text-gray-500 mt-1">
-                {hour.hour}:00
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recommendations */}
-      {analytics.recommendations.length > 0 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-          <h4 className="font-semibold text-yellow-800 mb-2 flex items-center gap-2">
-            <Lightbulb className="w-5 h-5" />
-            Productivity Tips
-          </h4>
-          <ul className="list-disc list-inside space-y-1 text-sm text-yellow-700">
-            {analytics.recommendations.map((rec: string, i: number) => (
-              <li key={i}>{rec}</li>
-            ))}
-          </ul>
+      {error && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700">
+          {error}
         </div>
       )}
-    </div>
-  );
-}
 
-function StatCard({ icon, title, value, subtitle }: any) {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center gap-2 mb-1">
-        {icon}
-        <p className="text-sm text-gray-500">{title}</p>
+      <div className="space-y-4">
+        <div>
+          <label className="text-sm font-medium text-gray-700">Meeting Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Weekly Team Sync"
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700">Participants</label>
+          <input
+            type="text"
+            value={participants}
+            onChange={(e) => setParticipants(e.target.value)}
+            placeholder="john@example.com, sarah@example.com"
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-xs text-gray-400 mt-1">Separate emails with commas</p>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700">Context / Background</label>
+          <textarea
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            placeholder="What's the meeting about? Any background info?"
+            rows={3}
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700">Duration (minutes)</label>
+          <select
+            value={duration}
+            onChange={(e) => setDuration(Number(e.target.value))}
+            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value={15}>15 min</option>
+            <option value={30}>30 min</option>
+            <option value={45}>45 min</option>
+            <option value={60}>60 min</option>
+            <option value={90}>90 min</option>
+          </select>
+        </div>
+
+        <button
+          onClick={generateAgenda}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-70"
+        >
+          {loading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Lightbulb className="w-4 h-4" />
+          )}
+          {loading ? "Generating..." : "Generate Agenda"}
+        </button>
+
+        {agenda && (
+          <div className="border-t border-gray-100 pt-4 space-y-4">
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                <Target className="w-4 h-4 text-blue-500" />
+                Objectives
+              </h4>
+              <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                {agenda.objectives.map((obj, i) => (
+                  <li key={i}>{obj}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                <List className="w-4 h-4 text-blue-500" />
+                Agenda Topics
+              </h4>
+              <div className="space-y-2">
+                {agenda.topics.map((topic, i) => (
+                  <div key={i} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg text-sm">
+                    <span className="font-medium">{topic.topic}</span>
+                    <div className="flex items-center gap-3 text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {topic.duration} min
+                      </span>
+                      <span className="text-xs flex items-center gap-1">
+                        <User className="w-3 h-3" />
+                        {topic.presenter}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-blue-500" />
+                  Preparation
+                </h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                  {agenda.preparation.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-blue-500" />
+                  Questions
+                </h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                  {agenda.questions.map((q, i) => (
+                    <li key={i}>{q}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-blue-500" />
+                Materials
+              </h4>
+              <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
+                {agenda.materials.map((material, i) => (
+                  <li key={i}>{material}</li>
+                ))}
+              </ul>
+            </div>
+
+            <button className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+              Save Agenda
+            </button>
+          </div>
+        )}
       </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
     </div>
   );
 }

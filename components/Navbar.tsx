@@ -2,7 +2,7 @@
 
 import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { Menu, X, Search, Bell, Sparkles, Home, Calendar, Settings } from "lucide-react";
+import { Menu, Search, Bell, Sparkles, Calendar, Settings } from "lucide-react";
 import { NotificationCenter } from "./NotificationCenter";
 
 interface NavbarProps {
@@ -12,7 +12,7 @@ interface NavbarProps {
 export default function Navbar({ onToggleSidebar }: NavbarProps) {
   const { user } = useUser();
 
-  return (
+  return ( 
     <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 px-4 py-2.5 z-50 h-16">
       <div className="max-w-7xl mx-auto flex justify-between items-center h-full">
         <div className="flex items-center gap-3">
@@ -34,12 +34,12 @@ export default function Navbar({ onToggleSidebar }: NavbarProps) {
         <div className="flex items-center gap-4">
           {/* Quick Actions */}
           <div className="hidden md:flex items-center gap-2">
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <Link href="/dashboard/calendar" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
               <Calendar className="w-4 h-4 text-gray-600" />
-            </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Home className="w-4 h-4 text-gray-600" />
-            </button>
+            </Link>
+            <Link href="/dashboard" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <Settings className="w-4 h-4 text-gray-600" />
+            </Link>
           </div>
 
           {/* Search */}

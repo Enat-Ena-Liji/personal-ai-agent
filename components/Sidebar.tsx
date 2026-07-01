@@ -18,7 +18,8 @@ import {
   Briefcase,
   Activity,
   Star,
-  HelpCircle
+  HelpCircle,
+  Globe
 } from "lucide-react";
 
 interface NavItem {
@@ -77,6 +78,8 @@ const navItems: NavItem[] = [
     label: "Analytics",
     href: "/dashboard/analytics",
   },
+  // Add to navItems
+{ icon: Globe, label: "Platforms", href: "/dashboard/platforms" },
   {
     icon: Settings,
     label: "Settings",

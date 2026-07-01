@@ -14,7 +14,8 @@ export default function DashboardPage() {
   const alerts = useQuery(api.alerts.getAlerts, { unreadOnly: true });
   const todayBriefing = useQuery(api.briefings.getTodayBriefing);
 
-  if (!isLoaded || platforms === undefined) {
+  // Show loading state
+  if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -22,12 +23,22 @@ export default function DashboardPage() {
     );
   }
 
+  // If not signed in, show message (layout will redirect)
   if (!isSignedIn) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <p className="text-gray-600">Please sign in to view your dashboard.</p>
         </div>
+      </div>
+    );
+  }
+
+  // Wait for data to load
+  if (platforms === undefined || alerts === undefined || todayBriefing === undefined) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
