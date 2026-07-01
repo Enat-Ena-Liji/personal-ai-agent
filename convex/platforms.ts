@@ -1,15 +1,9 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-// Connect a platform
 export const connectPlatform = mutation({
   args: {
-    platform: v.union(
-      v.literal("gmail"),
-      v.literal("whatsapp"),
-      v.literal("calendar"),
-      v.literal("slack")
-    ),
+    platform: v.string(),
     accountId: v.string(),
     accountEmail: v.optional(v.string()),
     accountName: v.optional(v.string()),
@@ -34,15 +28,16 @@ export const connectPlatform = mutation({
     }
 
     // Check if platform already exists
-    const existing = await ctx.db
+    const existingPlatforms = await ctx.db
       .query("connectedPlatforms")
-      .withIndex("by_user_platform", (q) => 
-        q.eq("userId", user._id).eq("platform", args.platform)
-      )
-      .first();
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    const existing = existingPlatforms.find(
+      p => p.platform === args.platform
+    );
 
     if (existing) {
-      // Update existing
       await ctx.db.patch(existing._id, {
         accountId: args.accountId,
         accountEmail: args.accountEmail,
@@ -56,7 +51,6 @@ export const connectPlatform = mutation({
       return existing._id;
     }
 
-    // Create new
     const platformId = await ctx.db.insert("connectedPlatforms", {
       userId: user._id,
       platform: args.platform,
@@ -75,13 +69,13 @@ export const connectPlatform = mutation({
   },
 });
 
-// Get all connected platforms for user
+// FIXED: Return empty array instead of throwing error
 export const getPlatforms = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return [];
+      return []; // Return empty array instead of throwing
     }
 
     const user = await ctx.db
@@ -92,27 +86,21 @@ export const getPlatforms = query({
       .first();
 
     if (!user) {
-      return [];
+      return []; // Return empty array instead of throwing
     }
 
     const platforms = await ctx.db
       .query("connectedPlatforms")
-      .withIndex("by_user_platform", (q) => q.eq("userId", user._id))
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
       .collect();
 
     return platforms;
   },
 });
 
-// Disconnect platform
 export const disconnectPlatform = mutation({
   args: {
-    platform: v.union(
-      v.literal("gmail"),
-      v.literal("whatsapp"),
-      v.literal("calendar"),
-      v.literal("slack")
-    ),
+    platform: v.string(),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -131,12 +119,12 @@ export const disconnectPlatform = mutation({
       throw new Error("User not found");
     }
 
-    const platform = await ctx.db
+    const platforms = await ctx.db
       .query("connectedPlatforms")
-      .withIndex("by_user_platform", (q) => 
-        q.eq("userId", user._id).eq("platform", args.platform)
-      )
-      .first();
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    const platform = platforms.find(p => p.platform === args.platform);
 
     if (!platform) {
       throw new Error("Platform not found");

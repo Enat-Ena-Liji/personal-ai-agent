@@ -9,11 +9,13 @@ import {
   Calendar, 
   Bell,
   Settings,
-  Sparkles 
+  Sparkles,
+  FileText // Add this
 } from "lucide-react";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+  { icon: FileText, label: "Briefings", href: "/briefing" }, // Add this
   { icon: Mail, label: "Gmail", href: "/dashboard/gmail" },
   { icon: MessageSquare, label: "WhatsApp", href: "/dashboard/whatsapp" },
   { icon: Calendar, label: "Calendar", href: "/dashboard/calendar" },

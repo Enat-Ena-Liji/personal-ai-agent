@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
@@ -34,6 +35,11 @@ export const updateUser = mutation({
 // Get user credits - Make sure this is exported
 export const getCredits = query({
   args: {},
+=======
+import { query } from "./_generated/server";
+
+export const getCredits = query({
+>>>>>>> feature/phase-4-ai-agent
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -49,6 +55,7 @@ export const getCredits = query({
 
     return user?.credits ?? 0;
   },
+<<<<<<< HEAD
 });
 
 // Update user credits
@@ -78,4 +85,6 @@ export const updateCredits = mutation({
       updatedAt: Date.now(),
     });
   },
+=======
+>>>>>>> feature/phase-4-ai-agent
 });

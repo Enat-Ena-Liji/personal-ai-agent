@@ -1,22 +1,12 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-// Create an alert
 export const createAlert = mutation({
   args: {
     title: v.string(),
     message: v.string(),
-    type: v.union(
-      v.literal("email"),
-      v.literal("whatsapp"),
-      v.literal("system"),
-      v.literal("calendar")
-    ),
-    priority: v.union(
-      v.literal("high"),
-      v.literal("medium"),
-      v.literal("low")
-    ),
+    type: v.string(),
+    priority: v.string(),
     data: v.optional(v.any()),
   },
   handler: async (ctx, args) => {
@@ -38,7 +28,11 @@ export const createAlert = mutation({
 
     const alertId = await ctx.db.insert("alerts", {
       userId: user._id,
-      ...args,
+      title: args.title,
+      message: args.message,
+      type: args.type,
+      priority: args.priority,
+      data: args.data,
       isRead: false,
       isDismissed: false,
       createdAt: Date.now(),
@@ -49,7 +43,7 @@ export const createAlert = mutation({
   },
 });
 
-// Get user alerts
+// FIXED: Return empty array instead of throwing error
 export const getAlerts = query({
   args: {
     limit: v.optional(v.number()),
@@ -72,23 +66,19 @@ export const getAlerts = query({
       return [];
     }
 
-    let queryBuilder = ctx.db
+    let alerts = await ctx.db
       .query("alerts")
-      .withIndex("by_user", (q) => q.eq("userId", user._id));
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
 
     if (args.unreadOnly) {
-      queryBuilder = queryBuilder.filter((q) => q.eq(q.field("isRead"), false));
+      alerts = alerts.filter(alert => !alert.isRead);
     }
 
-    const alerts = await queryBuilder
-      .order("desc")
-      .take(args.limit || 50);
-
-    return alerts;
+    return alerts.slice(0, args.limit || 50);
   },
 });
 
-// Mark alert as read
 export const markAlertAsRead = mutation({
   args: {
     alertId: v.id("alerts"),
@@ -99,11 +89,6 @@ export const markAlertAsRead = mutation({
       throw new Error("Unauthorized");
     }
 
-    const alert = await ctx.db.get(args.alertId);
-    if (!alert) {
-      throw new Error("Alert not found");
-    }
-
     await ctx.db.patch(args.alertId, {
       isRead: true,
       updatedAt: Date.now(),
@@ -111,7 +96,6 @@ export const markAlertAsRead = mutation({
   },
 });
 
-// Dismiss alert
 export const dismissAlert = mutation({
   args: {
     alertId: v.id("alerts"),
@@ -120,11 +104,6 @@ export const dismissAlert = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Unauthorized");
-    }
-
-    const alert = await ctx.db.get(args.alertId);
-    if (!alert) {
-      throw new Error("Alert not found");
     }
 
     await ctx.db.patch(args.alertId, {
