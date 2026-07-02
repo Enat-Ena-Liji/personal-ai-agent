@@ -1,12 +1,17 @@
+
+
+// This file is for server-side use only
 import { ConvexReactClient } from "convex/react";
 
 let convexClient: ConvexReactClient | null = null;
 
-export function getConvexClient(): ConvexReactClient {
+export function getConvexClient() {
   if (!convexClient) {
-    convexClient = new ConvexReactClient(
-      process.env.NEXT_PUBLIC_CONVEX_URL!
-    );
+    const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+    if (!url) {
+      throw new Error("NEXT_PUBLIC_CONVEX_URL is not defined");
+    }
+    convexClient = new ConvexReactClient(url);
   }
   return convexClient;
 }

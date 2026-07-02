@@ -12,23 +12,12 @@ import { CalendarAnalytics } from "@/components/CalendarAnalytics";
 
 type View = 'calendar' | 'analytics' | 'scheduler' | 'prep';
 
-// ... rest of the calendar page code
-
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  attendees?: string[];
-  description?: string;
-}
-
 export default function CalendarPage() {
   const { isLoaded, isSignedIn } = useUser();
   const [view, setView] = useState<View>('calendar');
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
@@ -40,6 +29,9 @@ export default function CalendarPage() {
   useEffect(() => {
     if (isCalendarConnected) {
       fetchCalendarEvents();
+    } else {
+      // Use mock data when not connected
+      setEvents(getMockEvents(currentMonth, currentYear));
     }
   }, [isCalendarConnected, currentMonth, currentYear]);
 
@@ -52,14 +44,13 @@ export default function CalendarPage() {
       const response = await fetch(`/api/calendar/events?start=${startDate.toISOString()}&end=${endDate.toISOString()}`);
       const data = await response.json();
       
-      if (data.success) {
+      if (data.success && data.events) {
         setEvents(data.events.map((e: any) => ({
           ...e,
           start: new Date(e.start),
           end: new Date(e.end),
         })));
       } else {
-        // Fallback mock data
         setEvents(getMockEvents(currentMonth, currentYear));
       }
     } catch (error) {
@@ -70,7 +61,7 @@ export default function CalendarPage() {
     }
   };
 
-  const getMockEvents = (month: number, year: number): CalendarEvent[] => {
+  const getMockEvents = (month: number, year: number) => {
     return [
       {
         id: '1',
@@ -87,14 +78,6 @@ export default function CalendarPage() {
         end: new Date(year, month, 18, 15, 30),
         attendees: ['mike@example.com', 'lisa@example.com'],
         description: 'Review project progress',
-      },
-      {
-        id: '3',
-        title: 'Client Call',
-        start: new Date(year, month, 22, 11, 0),
-        end: new Date(year, month, 22, 12, 0),
-        attendees: ['client@example.com'],
-        description: 'Discuss project requirements',
       },
     ];
   };
@@ -143,42 +126,21 @@ export default function CalendarPage() {
         <h1 className="text-3xl font-bold text-gray-900">Calendar</h1>
         <div className="flex items-center gap-2">
           <div className="flex bg-gray-100 rounded-lg p-1">
-            <button
-              onClick={() => setView('calendar')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                view === 'calendar' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <CalendarIcon className="w-3 h-3 inline mr-1" />
-              Calendar
-            </button>
-            <button
-              onClick={() => setView('scheduler')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                view === 'scheduler' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Sparkles className="w-3 h-3 inline mr-1" />
-              Schedule
-            </button>
-            <button
-              onClick={() => setView('prep')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                view === 'prep' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Settings className="w-3 h-3 inline mr-1" />
-              Prep
-            </button>
-            <button
-              onClick={() => setView('analytics')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                view === 'analytics' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <BarChart3 className="w-3 h-3 inline mr-1" />
-              Analytics
-            </button>
+            {['calendar', 'scheduler', 'prep', 'analytics'].map((v) => (
+              <button
+                key={v}
+                onClick={() => setView(v as View)}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  view === v ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {v === 'calendar' && <CalendarIcon className="w-3 h-3 inline mr-1" />}
+                {v === 'scheduler' && <Sparkles className="w-3 h-3 inline mr-1" />}
+                {v === 'prep' && <Settings className="w-3 h-3 inline mr-1" />}
+                {v === 'analytics' && <BarChart3 className="w-3 h-3 inline mr-1" />}
+                {v.charAt(0).toUpperCase() + v.slice(1)}
+              </button>
+            ))}
           </div>
           <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
             <Plus className="w-4 h-4" />
