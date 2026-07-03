@@ -1,102 +1,3 @@
-// import { v } from "convex/values";
-// import { mutation, query } from "./_generated/server";
-
-// export const connectPlatform = mutation({
-//   args: {
-//     platform: v.string(),
-//     accountId: v.string(),
-//     accountEmail: v.optional(v.string()),
-//     accountName: v.optional(v.string()),
-//     accessToken: v.optional(v.string()),
-//     refreshToken: v.optional(v.string()),
-//   },
-//   handler: async (ctx, args) => {
-//     const identity = await ctx.auth.getUserIdentity();
-//     if (!identity) {
-//       throw new Error("Unauthorized");
-//     }
-
-//     // Find user
-//     const user = await ctx.db
-//       .query("users")
-//       .withIndex("by_token", (q) => 
-//         q.eq("tokenIdentifier", identity.tokenIdentifier)
-//       )
-//       .first();
-
-//     if (!user) {
-//       throw new Error("User not found");
-//     }
-
-//     // Check if platform already exists
-//     const platforms = await ctx.db
-//       .query("connectedPlatforms")
-//       .withIndex("by_user", (q) => q.eq("userId", user._id))
-//       .collect();
-
-//     const existing = platforms.find(p => p.platform === args.platform);
-
-//     if (existing) {
-//       // Update existing
-//       await ctx.db.patch(existing._id, {
-//         accountId: args.accountId,
-//         accountEmail: args.accountEmail,
-//         accountName: args.accountName,
-//         accessToken: args.accessToken,
-//         refreshToken: args.refreshToken,
-//         isConnected: true,
-//         lastSync: Date.now(),
-//         updatedAt: Date.now(),
-//       });
-//       return existing._id;
-//     }
-
-//     // Create new
-//     const platformId = await ctx.db.insert("connectedPlatforms", {
-//       userId: user._id,
-//       platform: args.platform,
-//       accountId: args.accountId,
-//       accountEmail: args.accountEmail,
-//       accountName: args.accountName,
-//       accessToken: args.accessToken,
-//       refreshToken: args.refreshToken,
-//       isConnected: true,
-//       lastSync: Date.now(),
-//       createdAt: Date.now(),
-//       updatedAt: Date.now(),
-//     });
-
-//     return platformId;
-//   },
-// });
-
-// export const getPlatforms = query({
-//   args: {},
-//   handler: async (ctx) => {
-//     const identity = await ctx.auth.getUserIdentity();
-//     if (!identity) {
-//       return [];
-//     }
-
-//     const user = await ctx.db
-//       .query("users")
-//       .withIndex("by_token", (q) => 
-//         q.eq("tokenIdentifier", identity.tokenIdentifier)
-//       )
-//       .first();
-
-//     if (!user) {
-//       return [];
-//     }
-
-//     const platforms = await ctx.db
-//       .query("connectedPlatforms")
-//       .withIndex("by_user", (q) => q.eq("userId", user._id))
-//       .collect();
-
-//     return platforms;
-//   },
-// });
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
@@ -110,89 +11,215 @@ export const connectPlatform = mutation({
     refreshToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthorized");
-    }
+    console.log(`[connectPlatform] Starting for platform: ${args.platform}`);
+    
+    try {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        console.error("[connectPlatform] No identity found");
+        throw new Error("Unauthorized - No user identity found");
+      }
 
-    // Find user
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_token", (q) => 
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
-      )
-      .first();
+      console.log(`[connectPlatform] User identity found: ${identity.tokenIdentifier}`);
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+      // Find user
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_token", (q) => 
+          q.eq("tokenIdentifier", identity.tokenIdentifier)
+        )
+        .first();
 
-    // Check if platform already exists
-    const platforms = await ctx.db
-      .query("connectedPlatforms")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
-      .collect();
+      if (!user) {
+        console.error(`[connectPlatform] User not found for token: ${identity.tokenIdentifier}`);
+        throw new Error("User not found - Please sign in again");
+      }
 
-    const existing = platforms.find(p => p.platform === args.platform);
+      console.log(`[connectPlatform] User found: ${user._id}`);
 
-    if (existing) {
-      // Update existing
-      await ctx.db.patch(existing._id, {
+      // Check if platform already exists
+      const platforms = await ctx.db
+        .query("connectedPlatforms")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+
+      const existing = platforms.find(p => p.platform === args.platform);
+      console.log(`[connectPlatform] Existing platform found: ${!!existing}`);
+
+      if (existing) {
+        // Update existing
+        console.log(`[connectPlatform] Updating existing platform: ${existing._id}`);
+        await ctx.db.patch(existing._id, {
+          accountId: args.accountId,
+          accountEmail: args.accountEmail || existing.accountEmail,
+          accountName: args.accountName || existing.accountName,
+          accessToken: args.accessToken || existing.accessToken,
+          refreshToken: args.refreshToken || existing.refreshToken,
+          isConnected: true,
+          lastSync: Date.now(),
+          updatedAt: Date.now(),
+        });
+        console.log(`[connectPlatform] Platform updated successfully`);
+        return existing._id;
+      }
+
+      // Create new
+      console.log(`[connectPlatform] Creating new platform`);
+      const platformId = await ctx.db.insert("connectedPlatforms", {
+        userId: user._id,
+        platform: args.platform,
         accountId: args.accountId,
-        accountEmail: args.accountEmail,
-        accountName: args.accountName,
-        accessToken: args.accessToken,
-        refreshToken: args.refreshToken,
+        accountEmail: args.accountEmail || args.accountId,
+        accountName: args.accountName || args.accountId,
+        accessToken: args.accessToken || "",
+        refreshToken: args.refreshToken || "",
         isConnected: true,
         lastSync: Date.now(),
+        createdAt: Date.now(),
         updatedAt: Date.now(),
       });
-      return existing._id;
+
+      console.log(`[connectPlatform] Platform created with ID: ${platformId}`);
+      return platformId;
+    } catch (error) {
+      console.error("[connectPlatform] Error:", error);
+      throw error;
     }
-
-    // Create new
-    const platformId = await ctx.db.insert("connectedPlatforms", {
-      userId: user._id,
-      platform: args.platform,
-      accountId: args.accountId,
-      accountEmail: args.accountEmail,
-      accountName: args.accountName,
-      accessToken: args.accessToken,
-      refreshToken: args.refreshToken,
-      isConnected: true,
-      lastSync: Date.now(),
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
-
-    return platformId;
   },
 });
 
 export const getPlatforms = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
+    console.log("[getPlatforms] Starting");
+    
+    try {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        console.log("[getPlatforms] No identity found, returning empty array");
+        return [];
+      }
+
+      console.log(`[getPlatforms] User identity found: ${identity.tokenIdentifier}`);
+
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_token", (q) => 
+          q.eq("tokenIdentifier", identity.tokenIdentifier)
+        )
+        .first();
+
+      if (!user) {
+        console.log("[getPlatforms] User not found, returning empty array");
+        return [];
+      }
+
+      console.log(`[getPlatforms] User found: ${user._id}`);
+
+      const platforms = await ctx.db
+        .query("connectedPlatforms")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+
+      console.log(`[getPlatforms] Found ${platforms.length} platforms`);
+      return platforms;
+    } catch (error) {
+      console.error("[getPlatforms] Error:", error);
+      // Return empty array instead of throwing to prevent UI breaking
       return [];
     }
+  },
+});
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_token", (q) => 
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
-      )
-      .first();
+// Add a helper mutation to disconnect platforms
+export const disconnectPlatform = mutation({
+  args: {
+    platform: v.string(),
+  },
+  handler: async (ctx, args) => {
+    console.log(`[disconnectPlatform] Disconnecting platform: ${args.platform}`);
+    
+    try {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        console.error("[disconnectPlatform] No identity found");
+        throw new Error("Unauthorized");
+      }
 
-    if (!user) {
-      return [];
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_token", (q) => 
+          q.eq("tokenIdentifier", identity.tokenIdentifier)
+        )
+        .first();
+
+      if (!user) {
+        console.error(`[disconnectPlatform] User not found`);
+        throw new Error("User not found");
+      }
+
+      const platforms = await ctx.db
+        .query("connectedPlatforms")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+
+      const platform = platforms.find(p => p.platform === args.platform);
+      
+      if (!platform) {
+        console.log(`[disconnectPlatform] Platform not found: ${args.platform}`);
+        return null;
+      }
+
+      // Update to disconnected instead of deleting (preserves history)
+      await ctx.db.patch(platform._id, {
+        isConnected: false,
+        updatedAt: Date.now(),
+      });
+
+      console.log(`[disconnectPlatform] Platform disconnected: ${platform._id}`);
+      return platform._id;
+    } catch (error) {
+      console.error("[disconnectPlatform] Error:", error);
+      throw error;
     }
+  },
+});
 
-    const platforms = await ctx.db
-      .query("connectedPlatforms")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
-      .collect();
+// Add a helper query to check connection status
+export const isPlatformConnected = query({
+  args: {
+    platform: v.string(),
+  },
+  handler: async (ctx, args) => {
+    console.log(`[isPlatformConnected] Checking platform: ${args.platform}`);
+    
+    try {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        return false;
+      }
 
-    return platforms;
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_token", (q) => 
+          q.eq("tokenIdentifier", identity.tokenIdentifier)
+        )
+        .first();
+
+      if (!user) {
+        return false;
+      }
+
+      const platforms = await ctx.db
+        .query("connectedPlatforms")
+        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .collect();
+
+      const platform = platforms.find(p => p.platform === args.platform);
+      return platform?.isConnected || false;
+    } catch (error) {
+      console.error("[isPlatformConnected] Error:", error);
+      return false;
+    }
   },
 });

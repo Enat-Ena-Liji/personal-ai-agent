@@ -1,4 +1,4 @@
-// Server-side Convex client (for API routes)
+// lib/convex-server.ts
 import { ConvexClient } from "convex/browser";
 
 let convexServerClient: ConvexClient | null = null;
@@ -10,6 +10,7 @@ export function getConvexServerClient() {
       throw new Error("NEXT_PUBLIC_CONVEX_URL is not defined");
     }
     convexServerClient = new ConvexClient(url);
+    console.log("Convex server client created for:", url);
   }
   return convexServerClient;
 }

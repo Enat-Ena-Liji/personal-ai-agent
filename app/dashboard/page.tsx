@@ -7,6 +7,7 @@ import { Loader2, Sparkles, Mail, MessageSquare, Calendar, Bell, TrendingUp, Clo
 import Link from "next/link";
 import ConnectGmail from "@/components/ConnectGmail";
 import ConnectWhatsApp from "@/components/ConnectWhatsApp";
+import { AuthDebug } from "@/components/AuthDebug";
 
 export default function DashboardPage() {
   const { user, credits, isLoaded, isSignedIn } = useUser();
@@ -50,6 +51,11 @@ export default function DashboardPage() {
 
   return (
     <div>
+      {/* Debug Component - Remove in production */}
+      <div className="mb-6">
+        <AuthDebug />
+      </div>
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -85,7 +91,7 @@ export default function DashboardPage() {
           title="Platforms"
           value={connectedPlatforms}
           subtitle="Connected"
-          link="#"
+          link="/dashboard/platforms"
         />
         <QuickStat
           icon={<Clock className="w-5 h-5 text-purple-500" />}
