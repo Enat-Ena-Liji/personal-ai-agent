@@ -1,5 +1,19 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Minimal local types for emails and messages
+interface Email {
+  subject: string;
+  from?: string;
+  snippet?: string;
+  body?: string;
+}
+
+interface Message {
+  senderName: string;
+  body: string;
+  timestamp?: string;
+}
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export class AIService {
