@@ -2,44 +2,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
-export const getCurrentUser = query({
-  handler: async (ctx) => {
-    console.log("[getCurrentUser] Starting");
-    
-    try {
-      // Try to get the user identity from the token
-      const identity = await ctx.auth.getUserIdentity();
-      
-      if (!identity) {
-        console.log("[getCurrentUser] No identity found");
-        return null;
-      }
-
-      console.log("[getCurrentUser] Identity found:", {
-        tokenIdentifier: identity.tokenIdentifier,
-        email: identity.email,
-        name: identity.name,
-        subject: identity.subject,
-        issuer: identity.issuer,
-      });
-
-      // Find the user in the database
-      const user = await ctx.db
-        .query("users")
-        .withIndex("by_token", (q) => 
-          q.eq("tokenIdentifier", identity.tokenIdentifier)
-        )
-        .first();
-
-      console.log("[getCurrentUser] User:", user ? `Found (${user._id})` : "Not found");
-      return user || null;
-    } catch (error) {
-      console.error("[getCurrentUser] Error:", error);
-      return null;
-    }
-  },
-});
-
 export const storeUser = mutation({
   args: {
     tokenIdentifier: v.string(),
@@ -61,6 +23,15 @@ export const storeUser = mutation({
 
       if (existingUser) {
         console.log("[storeUser] User already exists:", existingUser._id);
+        
+        // Update user info
+        await ctx.db.patch(existingUser._id, {
+          email: args.email,
+          name: args.name,
+          imageUrl: args.imageUrl || existingUser.imageUrl,
+          updatedAt: Date.now(),
+        });
+        
         return existingUser._id;
       }
 
@@ -96,6 +67,40 @@ export const storeUser = mutation({
     } catch (error) {
       console.error("[storeUser] Error:", error);
       throw error;
+    }
+  },
+});
+
+export const getCurrentUser = query({
+  handler: async (ctx) => {
+    console.log("[getCurrentUser] Starting");
+    
+    try {
+      const identity = await ctx.auth.getUserIdentity();
+      
+      if (!identity) {
+        console.log("[getCurrentUser] No identity found");
+        return null;
+      }
+
+      console.log("[getCurrentUser] Identity found:", {
+        tokenIdentifier: identity.tokenIdentifier,
+        email: identity.email,
+        name: identity.name,
+      });
+
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_token", (q) => 
+          q.eq("tokenIdentifier", identity.tokenIdentifier)
+        )
+        .first();
+
+      console.log("[getCurrentUser] User:", user ? `Found (${user._id})` : "Not found");
+      return user || null;
+    } catch (error) {
+      console.error("[getCurrentUser] Error:", error);
+      return null;
     }
   },
 });

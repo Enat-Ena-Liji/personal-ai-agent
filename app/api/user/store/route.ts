@@ -1,28 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getConvexServerClient } from "@/lib/convex-server";
+import { api } from "@/convex/_generated/api";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId: clerkUserId } = await auth();
+    const { userId, getToken } = await auth();
     
-    if (!clerkUserId) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const token = await getToken();
     const { email, name, imageUrl } = await req.json();
-
+    
+    console.log("API /user/store - User ID:", userId);
+    console.log("API /user/store - Email:", email);
+    
     const convex = getConvexServerClient();
     
-    // Store user in Convex
-    const result = await convex.mutation("auth:storeUser", {
-      tokenIdentifier: clerkUserId,
-      email: email || "",
+    // Set auth on the client with the token
+    if (token) {
+      convex.setAuth(async () => token);
+    }
+    
+    // Store user in Convex using imported API
+    const result = await convex.mutation(api.auth.storeUser, {
+      tokenIdentifier: userId,
+      email: email || "user@example.com",
       name: name || "User",
       imageUrl: imageUrl || "",
     });
 
-    console.log("User stored in Convex:", result);
+    console.log("API /user/store - Result:", result);
 
     return NextResponse.json({ 
       success: true, 
@@ -30,9 +40,9 @@ export async function POST(req: NextRequest) {
       message: "User stored successfully" 
     });
   } catch (error) {
-    console.error("Failed to store user:", error);
+    console.error("API /user/store - Error:", error);
     return NextResponse.json(
-      { error: "Failed to store user" },
+      { error: "Failed to store user", details: String(error) },
       { status: 500 }
     );
   }
