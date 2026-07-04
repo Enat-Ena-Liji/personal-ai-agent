@@ -5,7 +5,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 export class AIService {
   private model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  async generateBriefing(emails: any[], messages: any[]) {
+
+  async generateBriefing(emails: Email[], messages: Message[]) {
     const prompt = `
       You are an AI assistant creating a daily briefing. Analyze this data:
       
