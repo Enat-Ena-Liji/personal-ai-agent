@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { getConvexServerClient } from "@/lib/convex-server";
-import { api } from "@/convex/_generated/api";
 
 export async function GET() {
   try {
@@ -30,39 +28,92 @@ export async function GET() {
       }, { status: 401 });
     }
     
-    const convex = getConvexServerClient();
-    
-    // Set auth on the client with the token
-    convex.setAuth(async () => token);
+    // Use fetch directly with the token in the Authorization header
+    const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+    if (!url) {
+      throw new Error("NEXT_PUBLIC_CONVEX_URL is not defined");
+    }
     
     let user = null;
     let platforms = [];
     
     try {
-      // Pass {} as the second argument for queries with no args
-      user = await convex.query(api.auth.getCurrentUser, {});
-      console.log("API /user/check - User found:", user ? "Yes" : "No");
+      // Query user using fetch with token
+      const userResponse = await fetch(`${url}/api/query/auth:getCurrentUser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
+      });
+      
+      if (userResponse.ok) {
+        user = await userResponse.json();
+        console.log("API /user/check - User found via fetch:", user ? "Yes" : "No");
+      } else {
+        console.log("API /user/check - User query failed:", userResponse.status);
+        const errorText = await userResponse.text();
+        console.log("Error response:", errorText);
+      }
       
       // If user not found, try to store them
       if (!user) {
         console.log("API /user/check - User not found, attempting to store...");
         
-        const storeResult = await convex.mutation(api.auth.storeUser, {
-          tokenIdentifier: userId,
-          email: "danielayen2112@gmail.com",
-          name: "Daniel Ayen",
-          imageUrl: "",
+        const storeResponse = await fetch(`${url}/api/mutation/auth:storeUser`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            tokenIdentifier: userId,
+            email: "danielayen2112@gmail.com",
+            name: "Daniel Ayen",
+            imageUrl: "",
+          }),
         });
         
-        console.log("API /user/check - Store result:", storeResult);
+        if (storeResponse.ok) {
+          const storeData = await storeResponse.json();
+          console.log("API /user/check - Store result:", storeData);
+        } else {
+          console.log("API /user/check - Store failed:", storeResponse.status);
+          const errorText = await storeResponse.text();
+          console.log("Store error:", errorText);
+        }
         
         // Try to get the user again
-        user = await convex.query(api.auth.getCurrentUser, {});
-        console.log("API /user/check - User after store:", user ? "Yes" : "No");
+        const retryResponse = await fetch(`${url}/api/query/auth:getCurrentUser`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({}),
+        });
+        
+        if (retryResponse.ok) {
+          user = await retryResponse.json();
+          console.log("API /user/check - User after store:", user ? "Yes" : "No");
+        }
       }
       
-      platforms = await convex.query(api.platforms.getPlatforms, {});
-      console.log("API /user/check - Platforms found:", platforms.length);
+      // Get platforms
+      const platformsResponse = await fetch(`${url}/api/query/platforms:getPlatforms`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({}),
+      });
+      
+      if (platformsResponse.ok) {
+        platforms = await platformsResponse.json();
+        console.log("API /user/check - Platforms found:", platforms.length);
+      }
     } catch (error) {
       console.error("API /user/check - Convex error:", error);
       return NextResponse.json({
