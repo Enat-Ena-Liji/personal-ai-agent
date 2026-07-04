@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { useUser } from "@/hooks/useUser";
 import { useAuth } from "@clerk/nextjs";
 
-export default function TestPage() {
+export default function TestPage() {  // ✅ This must be a default export
   const { user, credits, isLoaded, isSignedIn } = useUser();
   const platforms = useQuery(api.platforms.getPlatforms);
   const { getToken, isSignedIn: clerkSignedIn } = useAuth();
@@ -45,11 +45,6 @@ export default function TestPage() {
     } catch (error) {
       console.error("Error getting token:", error);
     }
-  };
-
-  const refreshAuth = () => {
-    // Force refresh the Convex client
-    window.location.reload();
   };
 
   if (!isLoaded) {
@@ -92,12 +87,6 @@ export default function TestPage() {
           className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
         >
           {loading ? "Checking..." : "Check API"}
-        </button>
-        <button
-          onClick={refreshAuth}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-        >
-          Refresh Auth
         </button>
       </div>
 
