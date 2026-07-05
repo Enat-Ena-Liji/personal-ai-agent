@@ -9,10 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@adiwajshing/keyed-db": "^0.2.4",
     "@clerk/nextjs": "^7.5.10",
     "@google/generative-ai": "^0.24.1",
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "@slack/web-api": "^7.18.0",
+    "@whiskeysockets/baileys": "^7.0.0-rc13",
     "axios": "^1.18.1",
     "convex": "^1.42.1",
     "date-fns": "^4.4.0",
@@ -23,6 +25,7 @@
     "next": "16.2.9",
     "node-cron": "^4.5.0",
     "nodemailer": "^9.0.3",
+    "qrcode-terminal": "^0.12.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "web-push": "^3.6.7"
@@ -30,6 +33,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.43",
+    "@types/qrcode-terminal": "^0.12.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
