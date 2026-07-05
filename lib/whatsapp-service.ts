@@ -1,8 +1,8 @@
+// lib/whatsapp-service.ts
 import { 
   default as makeWASocket,
   useMultiFileAuthState,
   DisconnectReason,
-  makeInMemoryStore,
   Browsers,
   WASocket,
   WAMessage,
@@ -11,6 +11,14 @@ import {
 import { Boom } from "@hapi/boom";
 import * as path from "path";
 import * as fs from "fs";
+
+// Import makeInMemoryStore correctly from the main package
+import makeInMemoryStore from "@whiskeysockets/baileys/lib/Store/make-in-memory-store.js";
+
+type MessageContext = {
+  mentionedJid?: string[];
+  quotedMessage?: any;
+};
 
 export interface WhatsAppMessage {
   id: string;
@@ -48,7 +56,10 @@ export class WhatsAppService {
     if (!fs.existsSync(this.sessionDir)) {
       fs.mkdirSync(this.sessionDir, { recursive: true });
     }
-    this.store = makeInMemoryStore({});
+    // Create store with proper options
+    this.store = makeInMemoryStore({
+      logger: console,
+    });
   }
 
   async connect(
@@ -67,11 +78,19 @@ export class WhatsAppService {
       const { state, saveCreds } = await useMultiFileAuthState(this.sessionDir);
       
       // Load store from file
-      this.store.readFromFile(path.join(this.sessionDir, "store.json"));
+      try {
+        this.store.readFromFile(path.join(this.sessionDir, "store.json"));
+      } catch (error) {
+        console.log("No existing store found, starting fresh");
+      }
       
       // Update store periodically
       setInterval(() => {
-        this.store.writeToFile(path.join(this.sessionDir, "store.json"));
+        try {
+          this.store.writeToFile(path.join(this.sessionDir, "store.json"));
+        } catch (error) {
+          console.error("Failed to write store:", error);
+        }
       }, 10000);
 
       this.socket = makeWASocket({
@@ -81,18 +100,17 @@ export class WhatsAppService {
         generateHighQualityLinkPreview: true,
         markOnlineOnConnect: true,
         defaultQueryTimeoutMs: 30000,
-        patchMessageBeforeSending: (message) => {
+        patchMessageBeforeSending: (message: any) => {
           const patch = {
             ...message,
             mentions: message.mentions || [],
-            contextInfo: message.contextInfo || {},
           };
-          return patch as any;
+          return patch;
         },
       });
 
       // Handle connection updates
-      this.socket.ev.on("connection.update", async (update) => {
+      this.socket.ev.on("connection.update", async (update: any) => {
         const { connection, lastDisconnect, qr } = update;
         
         if (qr) {
@@ -102,7 +120,8 @@ export class WhatsAppService {
         }
 
         if (connection === "close") {
-          const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
+          const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
+          const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
           console.log("Connection closed. Reconnecting:", shouldReconnect);
           
           if (shouldReconnect) {
@@ -114,8 +133,11 @@ export class WhatsAppService {
             this.isConnected = false;
             this.connectionHandlers.forEach(h => h('disconnected'));
             console.log("Logged out. Please reconnect.");
-            // Delete session if logged out
-            fs.rmSync(this.sessionDir, { recursive: true, force: true });
+            try {
+              fs.rmSync(this.sessionDir, { recursive: true, force: true });
+            } catch (error) {
+              console.error("Failed to remove session:", error);
+            }
           }
         } else if (connection === "open") {
           this.isConnected = true;
@@ -125,7 +147,7 @@ export class WhatsAppService {
       });
 
       // Handle messages
-      this.socket.ev.on("messages.upsert", async (m) => {
+      this.socket.ev.on("messages.upsert", async (m: any) => {
         const msg = m.messages[0];
         if (!msg.message) return;
 
@@ -157,16 +179,25 @@ export class WhatsAppService {
       const sender = isGroup ? key.participant || from : from;
       const senderName = await this.getContactName(sender);
 
-      // Get message content
       let body = '';
       let isMedia = false;
       let mediaType = '';
       let quotedMsg = '';
 
+      // Safe message content extraction
       if (message.conversation) {
         body = message.conversation;
       } else if (message.extendedTextMessage) {
         body = message.extendedTextMessage.text || '';
+        const contextInfo = (message.extendedTextMessage as any).contextInfo;
+        if (contextInfo?.quotedMessage) {
+          const quoted = contextInfo.quotedMessage;
+          if (quoted.conversation) {
+            quotedMsg = quoted.conversation;
+          } else if (quoted.extendedTextMessage?.text) {
+            quotedMsg = quoted.extendedTextMessage.text;
+          }
+        }
       } else if (message.imageMessage) {
         body = message.imageMessage.caption || '';
         isMedia = true;
@@ -189,24 +220,14 @@ export class WhatsAppService {
         mediaType = 'sticker';
       }
 
-      // Check for quoted message
-      if (message.extendedTextMessage?.contextInfo?.quotedMessage) {
-        const quoted = message.extendedTextMessage.contextInfo.quotedMessage;
-        if (quoted.conversation) {
-          quotedMsg = quoted.conversation;
-        } else if (quoted.extendedTextMessage?.text) {
-          quotedMsg = quoted.extendedTextMessage.text;
-        }
-      }
-
-      // Get mentions
-      const mentions = message.extendedTextMessage?.contextInfo?.mentionedJid || [];
+      const contextInfo = (message.extendedTextMessage as any)?.contextInfo;
+      const mentions = contextInfo?.mentionedJid || [];
 
       return {
         id: key.id || '',
         from,
         body,
-        timestamp: msg.messageTimestamp as number || Date.now() / 1000,
+        timestamp: typeof msg.messageTimestamp === 'number' ? msg.messageTimestamp : Date.now() / 1000,
         isGroup,
         sender,
         senderName: senderName || sender.split('@')[0],
@@ -251,11 +272,14 @@ export class WhatsAppService {
     }
 
     try {
-      const message = {
+      const message: any = {
         [type]: mediaBuffer,
         caption: caption || '',
-        mimetype: type === 'image' ? 'image/jpeg' : type === 'video' ? 'video/mp4' : 'application/pdf',
       };
+      
+      if (type === 'image') message.mimetype = 'image/jpeg';
+      else if (type === 'video') message.mimetype = 'video/mp4';
+      else if (type === 'document') message.mimetype = 'application/pdf';
 
       const result = await this.socket.sendMessage(to, message);
       return !!result;
@@ -303,9 +327,9 @@ export class WhatsAppService {
     if (!this.socket) return undefined;
     
     try {
-      const contact = await this.socket?.contactQuery?.({ 
-        jid, 
-        timeout: 10000 
+      const contact = await this.socket.contactQuery?.({
+        jid,
+        timeout: 10000
       });
       return contact?.name;
     } catch (error) {
@@ -315,7 +339,11 @@ export class WhatsAppService {
 
   async disconnect(): Promise<void> {
     if (this.socket) {
-      await this.socket.logout();
+      try {
+        await this.socket.logout();
+      } catch (error) {
+        console.error("Error during logout:", error);
+      }
       this.isConnected = false;
       this.socket = null;
       this.connectionHandlers.forEach(h => h('disconnected'));

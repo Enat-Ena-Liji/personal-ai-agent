@@ -127,4 +127,24 @@ analytics: defineTable({
   .index("by_user", ["userId"])
   .index("by_user_date", ["userId", "createdAt"]),
   
+  // Add this to your schema
+whatsappMessages: defineTable({
+  userId: v.id("users"),
+  messageId: v.string(),
+  from: v.string(),
+  body: v.string(),
+  isGroup: v.boolean(),
+  sender: v.string(),
+  senderName: v.optional(v.string()),
+  timestamp: v.number(),
+  isRead: v.boolean(),
+  isReplied: v.boolean(),
+  repliedTo: v.optional(v.string()),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+})
+  .index("by_user", ["userId"])
+  .index("by_user_timestamp", ["userId", "timestamp"])
+  .index("by_sender", ["sender"]),
+  
 });

@@ -15,7 +15,6 @@ export default function DashboardPage() {
   const alerts = useQuery(api.alerts.getAlerts, { unreadOnly: true });
   const todayBriefing = useQuery(api.briefings.getTodayBriefing);
 
-  // Show loading state
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -24,7 +23,6 @@ export default function DashboardPage() {
     );
   }
 
-  // If not signed in, show message (layout will redirect)
   if (!isSignedIn) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -35,7 +33,6 @@ export default function DashboardPage() {
     );
   }
 
-  // Wait for data to load
   if (platforms === undefined || alerts === undefined || todayBriefing === undefined) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -51,7 +48,6 @@ export default function DashboardPage() {
 
   return (
     <div>
-      {/* Debug Component - Remove in production */}
       <div className="mb-6">
         <AuthDebug />
       </div>
