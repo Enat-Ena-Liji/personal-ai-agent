@@ -5,18 +5,19 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@/hooks/useUser";
 import { useAuth } from "@clerk/nextjs";
+import type { ApiResponse } from "@/types";
 
 export default function TestPage() {
   const { user, credits, isLoaded, isSignedIn } = useUser();
   const platforms = useQuery(api.platforms.getPlatforms);
   const { getToken, isSignedIn: clerkSignedIn } = useAuth();
-  const [apiCheck, setApiCheck] = useState<any>(null);
+  const [apiCheck, setApiCheck] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [tokenInfo, setTokenInfo] = useState<string>("");
 
   useEffect(() => {
     if (clerkSignedIn) {
-      getToken().then(t => {
+      getToken().then((t: string | null) => {
         setTokenInfo(t ? `Token: ${t.substring(0, 20)}... (${t.length} chars)` : "No token");
       });
     }
@@ -26,7 +27,7 @@ export default function TestPage() {
     setLoading(true);
     try {
       const response = await fetch("/api/user/check");
-      const data = await response.json();
+      const data: ApiResponse = await response.json();
       setApiCheck(data);
       console.log("API Check Result:", data);
     } catch (error) {

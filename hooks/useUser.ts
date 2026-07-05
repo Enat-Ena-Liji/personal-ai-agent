@@ -4,19 +4,17 @@ import { useUser as useClerkUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect, useRef } from "react";
+import type { User } from "@/types";
 
 export function useUser() {
   const { user, isLoaded: clerkLoaded, isSignedIn } = useClerkUser();
-  const currentUser = useQuery(api.auth.getCurrentUser);
-  const credits = useQuery(api.users.getCredits);
+  const currentUser = useQuery(api.auth.getCurrentUser) as User | null | undefined;
+  const credits = useQuery(api.users.getCredits) as number | undefined;
   
-  // Use ref to prevent multiple calls
   const hasStoredUser = useRef(false);
 
   useEffect(() => {
-    // Only store once and when conditions are met
     if (isSignedIn && user && clerkLoaded && !hasStoredUser.current) {
-      // Mark as stored immediately to prevent re-runs
       hasStoredUser.current = true;
       
       console.log("[useUser] Storing user via API...");
@@ -39,14 +37,13 @@ export function useUser() {
         })
         .catch(error => {
           console.error("[useUser] Failed to store user:", error);
-          // Reset the flag if storing failed, so we can retry
           hasStoredUser.current = false;
         });
     }
   }, [isSignedIn, user, clerkLoaded]);
 
   return {
-    user: currentUser,
+    user: currentUser || null,
     credits: credits ?? 0,
     isLoaded: clerkLoaded,
     isSignedIn,

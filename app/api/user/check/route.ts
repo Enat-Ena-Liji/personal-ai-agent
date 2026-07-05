@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { api } from "@/convex/_generated/api";
+import type { User, Platform, ApiResponse } from "@/types";
 
 export async function GET() {
   try {
@@ -10,7 +11,7 @@ export async function GET() {
     console.log("API /user/check - User ID:", userId);
     
     if (!userId) {
-      return NextResponse.json({ 
+      return NextResponse.json<ApiResponse>({ 
         error: "Unauthorized", 
         userId: null,
         message: "No user ID from Clerk"
@@ -21,7 +22,7 @@ export async function GET() {
     console.log("API /user/check - Token received:", token ? "Yes (length: " + token.length + ")" : "No");
     
     if (!token) {
-      return NextResponse.json({
+      return NextResponse.json<ApiResponse>({
         user: null,
         platforms: [],
         clerkId: userId,
@@ -30,21 +31,18 @@ export async function GET() {
       }, { status: 401 });
     }
     
-    // Use the Convex client with setAuth (works in server context)
     const convex = getConvexServerClient();
     
     // Set auth on the client
     convex.setAuth(async () => token);
     
-    let user = null;
-    let platforms = [];
+    let user: User | null = null;
+    let platforms: Platform[] = [];
     
     try {
-      // Use the imported api references
       user = await convex.query(api.auth.getCurrentUser, {});
       console.log("API /user/check - User found:", user ? "Yes" : "No");
       
-      // If user not found, try to store them
       if (!user) {
         console.log("API /user/check - User not found, attempting to store...");
         
@@ -57,7 +55,6 @@ export async function GET() {
         
         console.log("API /user/check - Store result:", storeResult);
         
-        // Try to get the user again
         user = await convex.query(api.auth.getCurrentUser, {});
         console.log("API /user/check - User after store:", user ? "Yes" : "No");
       }
@@ -66,7 +63,7 @@ export async function GET() {
       console.log("API /user/check - Platforms found:", platforms.length);
     } catch (error) {
       console.error("API /user/check - Convex error:", error);
-      return NextResponse.json({
+      return NextResponse.json<ApiResponse>({
         user: null,
         platforms: [],
         clerkId: userId,
@@ -79,7 +76,7 @@ export async function GET() {
       }, { status: 500 });
     }
     
-    return NextResponse.json({
+    return NextResponse.json<ApiResponse>({
       user: user,
       platforms: platforms,
       clerkId: userId,
@@ -92,7 +89,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error("API /user/check - Error:", error);
-    return NextResponse.json(
+    return NextResponse.json<ApiResponse>(
       { error: "Failed to check user", details: String(error) },
       { status: 500 }
     );
