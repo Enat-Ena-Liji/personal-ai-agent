@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getConvexServerClient } from "@/lib/convex-server";
 import { api } from "@/convex/_generated/api";
-import type { User, Platform, ApiResponse } from "@/types";
+import type { User, Platform, CheckUserResponse } from "@/types";
 
 export async function GET() {
   try {
@@ -11,9 +11,12 @@ export async function GET() {
     console.log("API /user/check - User ID:", userId);
     
     if (!userId) {
-      return NextResponse.json<ApiResponse>({ 
-        error: "Unauthorized", 
-        userId: null,
+      return NextResponse.json<CheckUserResponse>({ 
+        error: "Unauthorized",
+        user: null,
+        platforms: [],
+        clerkId: "",
+        tokenReceived: false,
         message: "No user ID from Clerk"
       }, { status: 401 });
     }
@@ -22,7 +25,7 @@ export async function GET() {
     console.log("API /user/check - Token received:", token ? "Yes (length: " + token.length + ")" : "No");
     
     if (!token) {
-      return NextResponse.json<ApiResponse>({
+      return NextResponse.json<CheckUserResponse>({
         user: null,
         platforms: [],
         clerkId: userId,
@@ -63,7 +66,7 @@ export async function GET() {
       console.log("API /user/check - Platforms found:", platforms.length);
     } catch (error) {
       console.error("API /user/check - Convex error:", error);
-      return NextResponse.json<ApiResponse>({
+      return NextResponse.json<CheckUserResponse>({
         user: null,
         platforms: [],
         clerkId: userId,
@@ -76,7 +79,7 @@ export async function GET() {
       }, { status: 500 });
     }
     
-    return NextResponse.json<ApiResponse>({
+    return NextResponse.json<CheckUserResponse>({
       user: user,
       platforms: platforms,
       clerkId: userId,
@@ -89,8 +92,15 @@ export async function GET() {
     });
   } catch (error) {
     console.error("API /user/check - Error:", error);
-    return NextResponse.json<ApiResponse>(
-      { error: "Failed to check user", details: String(error) },
+    return NextResponse.json<CheckUserResponse>(
+      { 
+        error: "Failed to check user",
+        user: null,
+        platforms: [],
+        clerkId: "",
+        tokenReceived: false,
+        details: String(error),
+      },
       { status: 500 }
     );
   }

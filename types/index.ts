@@ -25,12 +25,14 @@ export interface Platform {
   updatedAt: number;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse {
   success?: boolean;
-  data?: T;
+  data?: unknown;
   error?: string;
   message?: string;
+  details?: string;
   user?: User | null;
+  userId?: string;
   platforms?: Platform[];
   clerkId?: string;
   tokenReceived?: boolean;
@@ -38,4 +40,16 @@ export interface ApiResponse<T = any> {
     userId: string;
     tokenLength: number;
   };
+}
+
+export interface StoreUserResponse extends ApiResponse {
+  userId: string;
+  success: boolean;
+}
+
+export interface CheckUserResponse extends ApiResponse {
+  user: User | null;
+  platforms: Platform[];
+  clerkId: string;
+  tokenReceived: boolean;
 }
