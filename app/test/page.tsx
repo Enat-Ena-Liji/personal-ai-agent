@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { useUser } from "@/hooks/useUser";
 import { useAuth } from "@clerk/nextjs";
 
-export default function TestPage() {  // ✅ This must be a default export
+export default function TestPage() {
   const { user, credits, isLoaded, isSignedIn } = useUser();
   const platforms = useQuery(api.platforms.getPlatforms);
   const { getToken, isSignedIn: clerkSignedIn } = useAuth();
@@ -31,6 +31,7 @@ export default function TestPage() {  // ✅ This must be a default export
       console.log("API Check Result:", data);
     } catch (error) {
       console.error("API Check Error:", error);
+      setApiCheck({ error: String(error) });
     } finally {
       setLoading(false);
     }
