@@ -32,3 +32,6 @@ Thumbs.db
 # Build outputs
 *.tsbuildinfo
 
+
+# clerk configuration (can include secrets)
+/.clerk/
