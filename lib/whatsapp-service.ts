@@ -6,14 +6,12 @@ import {
   Browsers,
   WASocket,
   WAMessage,
-  proto
+  proto,
+  makeInMemoryStore // Imported directly from the main package
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
 import * as path from "path";
 import * as fs from "fs";
-
-// Import makeInMemoryStore correctly from the main package
-import makeInMemoryStore from "@whiskeysockets/baileys/lib/Store/make-in-memory-store.js";
 
 type MessageContext = {
   mentionedJid?: string[];
@@ -56,7 +54,7 @@ export class WhatsAppService {
     if (!fs.existsSync(this.sessionDir)) {
       fs.mkdirSync(this.sessionDir, { recursive: true });
     }
-    // Create store with proper options
+    // Create store with proper options using the imported makeInMemoryStore
     this.store = makeInMemoryStore({
       logger: console,
     });
@@ -184,7 +182,6 @@ export class WhatsAppService {
       let mediaType = '';
       let quotedMsg = '';
 
-      // Safe message content extraction
       if (message.conversation) {
         body = message.conversation;
       } else if (message.extendedTextMessage) {
