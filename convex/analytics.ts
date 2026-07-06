@@ -3,8 +3,49 @@ import { mutation, query } from "./_generated/server";
 
 export const store = mutation({
   args: {
-    data: v.any(),
-    period: v.number(),
+    date: v.string(),
+    metrics: v.object({
+      emailsReceived: v.number(),
+      emailsSent: v.number(),
+      emailsReplied: v.number(),
+      responseTime: v.number(),
+      whatsappMessages: v.number(),
+      meetingsAttended: v.number(),
+      tasksCompleted: v.number(),
+      priorityHigh: v.number(),
+      priorityMedium: v.number(),
+      priorityLow: v.number(),
+      categories: v.object({
+        work: v.number(),
+        personal: v.number(),
+        social: v.number(),
+        promotional: v.number(),
+      }),
+      sentiment: v.object({
+        positive: v.number(),
+        neutral: v.number(),
+        negative: v.number(),
+      }),
+      productivityScore: v.number(),
+      focusTime: v.number(),
+      distractions: v.number(),
+    }),
+    weeklyProgress: v.array(v.object({
+      day: v.string(),
+      value: v.number(),
+    })),
+    monthlyTrends: v.array(v.object({
+      week: v.string(),
+      emails: v.number(),
+      messages: v.number(),
+      meetings: v.number(),
+    })),
+    recommendations: v.array(v.string()),
+    streaks: v.object({
+      current: v.number(),
+      longest: v.number(),
+      lastActive: v.number(),
+    }),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -17,16 +58,9 @@ export const store = mutation({
 
     if (!user) throw new Error("User not found");
 
-    const date = new Date().toISOString().split("T")[0];
-    
     await ctx.db.insert("analytics", {
       userId: user._id,
-      date,
-      metrics: args.data.metrics,
-      weeklyProgress: args.data.weeklyProgress,
-      monthlyTrends: args.data.monthlyTrends,
-      recommendations: args.data.recommendations,
-      streaks: args.data.streaks,
+      ...args,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
