@@ -14,6 +14,7 @@ import type * as auth from "../auth.js";
 import type * as briefings from "../briefings.js";
 import type * as emailClassifier from "../emailClassifier.js";
 import type * as emailDrafts from "../emailDrafts.js";
+import type * as emailTemplates from "../emailTemplates.js";
 import type * as followups from "../followups.js";
 import type * as notifications from "../notifications.js";
 import type * as platforms from "../platforms.js";
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   briefings: typeof briefings;
   emailClassifier: typeof emailClassifier;
   emailDrafts: typeof emailDrafts;
+  emailTemplates: typeof emailTemplates;
   followups: typeof followups;
   notifications: typeof notifications;
   platforms: typeof platforms;

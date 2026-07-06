@@ -85,6 +85,8 @@ const navItems: NavItem[] = [
     label: "Settings",
     href: "/dashboard/settings",
   },
+  // Add to navItems
+{ icon: FileText, label: "Email Templates", href: "/dashboard/email-templates" },
 ];
 
 export default function Sidebar({ isOpen = true }) {

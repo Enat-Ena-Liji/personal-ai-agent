@@ -194,4 +194,59 @@ priorityInbox: defineTable({
 })
   .index("by_user", ["userId"])
   .index("by_user_timestamp", ["userId", "timestamp"]),
+
+  // Add to your existing schema
+emailTemplates: defineTable({
+  userId: v.id("users"),
+  name: v.string(),
+  subject: v.string(),
+  body: v.string(),
+  category: v.optional(v.union(
+    v.literal("work"),
+    v.literal("personal"),
+    v.literal("sales"),
+    v.literal("support"),
+    v.literal("follow-up"),
+    v.literal("meeting"),
+    v.literal("introduction"),
+    v.literal("other")
+  )),
+  variables: v.array(v.string()),
+  isFavorite: v.boolean(),
+  usageCount: v.number(),
+  lastUsed: v.optional(v.number()),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+})
+  .index("by_user", ["userId"])
+  .index("by_user_favorite", ["userId", "isFavorite"])
+  .index("by_user_category", ["userId", "category"]),
+
+  // Add this to your schema
+emailTemplates: defineTable({
+  userId: v.id("users"),
+  name: v.string(),
+  subject: v.string(),
+  body: v.string(),
+  category: v.optional(v.union(
+    v.literal("work"),
+    v.literal("personal"),
+    v.literal("sales"),
+    v.literal("support"),
+    v.literal("follow-up"),
+    v.literal("meeting"),
+    v.literal("introduction"),
+    v.literal("other")
+  )),
+  variables: v.array(v.string()),
+  isFavorite: v.boolean(),
+  usageCount: v.number(),
+  lastUsed: v.optional(v.number()),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+})
+  .index("by_user", ["userId"])
+  .index("by_user_favorite", ["userId", "isFavorite"])
+  .index("by_user_category", ["userId", "category"]),
+  
 });
