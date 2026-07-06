@@ -17,6 +17,7 @@ import type * as emailDrafts from "../emailDrafts.js";
 import type * as followups from "../followups.js";
 import type * as notifications from "../notifications.js";
 import type * as platforms from "../platforms.js";
+import type * as priorityInbox from "../priorityInbox.js";
 import type * as test from "../test.js";
 import type * as users from "../users.js";
 
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   followups: typeof followups;
   notifications: typeof notifications;
   platforms: typeof platforms;
+  priorityInbox: typeof priorityInbox;
   test: typeof test;
   users: typeof users;
 }>;

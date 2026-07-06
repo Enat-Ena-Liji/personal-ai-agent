@@ -147,4 +147,51 @@ whatsappMessages: defineTable({
   .index("by_user_timestamp", ["userId", "timestamp"])
   .index("by_sender", ["sender"]),
   
+  // Add to your existing schema
+emailDrafts: defineTable({
+  userId: v.id("users"),
+  platform: v.string(),
+  threadId: v.optional(v.string()),
+  to: v.array(v.string()),
+  cc: v.optional(v.array(v.string())),
+  bcc: v.optional(v.array(v.string())),
+  subject: v.string(),
+  body: v.string(),
+  status: v.union(
+    v.literal("draft"),
+    v.literal("sent"),
+    v.literal("failed")
+  ),
+  priority: v.optional(v.union(
+    v.literal("high"),
+    v.literal("medium"),
+    v.literal("low")
+  )),
+  category: v.optional(v.union(
+    v.literal("work"),
+    v.literal("personal"),
+    v.literal("social"),
+    v.literal("promotional"),
+    v.literal("spam")
+  )),
+  isStarred: v.optional(v.boolean()),
+  isArchived: v.optional(v.boolean()),
+  labels: v.optional(v.array(v.string())),
+  sentAt: v.optional(v.number()),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+})
+  .index("by_user_status", ["userId", "status"])
+  .index("by_user_priority", ["userId", "priority"])
+  .index("by_user", ["userId"]),
+
+  // Add this to your schema
+priorityInbox: defineTable({
+  userId: v.id("users"),
+  emails: v.array(v.any()),
+  timestamp: v.number(),
+  updatedAt: v.optional(v.number()),
+})
+  .index("by_user", ["userId"])
+  .index("by_user_timestamp", ["userId", "timestamp"]),
 });
