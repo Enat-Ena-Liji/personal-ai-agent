@@ -248,5 +248,56 @@ emailTemplates: defineTable({
   .index("by_user", ["userId"])
   .index("by_user_favorite", ["userId", "isFavorite"])
   .index("by_user_category", ["userId", "category"]),
-  
+  // Add to your existing schema
+analytics: defineTable({
+  userId: v.id("users"),
+  date: v.string(),
+  metrics: v.object({
+    emailsReceived: v.number(),
+    emailsSent: v.number(),
+    emailsReplied: v.number(),
+    responseTime: v.number(),
+    whatsappMessages: v.number(),
+    meetingsAttended: v.number(),
+    tasksCompleted: v.number(),
+    priorityHigh: v.number(),
+    priorityMedium: v.number(),
+    priorityLow: v.number(),
+    categories: v.object({
+      work: v.number(),
+      personal: v.number(),
+      social: v.number(),
+      promotional: v.number(),
+    }),
+    sentiment: v.object({
+      positive: v.number(),
+      neutral: v.number(),
+      negative: v.number(),
+    }),
+    productivityScore: v.number(),
+    focusTime: v.number(),
+    distractions: v.number(),
+  }),
+  weeklyProgress: v.array(v.object({
+    day: v.string(),
+    value: v.number(),
+  })),
+  monthlyTrends: v.array(v.object({
+    week: v.string(),
+    emails: v.number(),
+    messages: v.number(),
+    meetings: v.number(),
+  })),
+  recommendations: v.array(v.string()),
+  streaks: v.object({
+    current: v.number(),
+    longest: v.number(),
+    lastActive: v.number(),
+  }),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+})
+  .index("by_user_date", ["userId", "date"])
+  .index("by_user", ["userId"]),
+
 });

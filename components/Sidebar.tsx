@@ -78,6 +78,8 @@ const navItems: NavItem[] = [
     label: "Analytics",
     href: "/dashboard/analytics",
   },
+  { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+
   // Add to navItems
 { icon: Globe, label: "Platforms", href: "/dashboard/platforms" },
   {
