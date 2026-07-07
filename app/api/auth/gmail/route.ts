@@ -32,7 +32,8 @@ export async function GET() {
     });
 
     console.log("Auth URL generated:", authUrl);
-    return NextResponse.json({ url: authUrl });
+    // Redirect to Google OAuth page instead of returning JSON
+    return NextResponse.redirect(authUrl);
   } catch (error) {
     console.error("Error generating Gmail auth URL:", error);
     return NextResponse.json(

@@ -1,7 +1,7 @@
 // lib/convex-server.ts
-import { ConvexClient } from "convex/browser";
+import { ConvexHttpClient } from "convex/browser";
 
-let convexServerClient: ConvexClient | null = null;
+let convexServerClient: ConvexHttpClient | null = null;
 
 export function getConvexServerClient() {
   if (!convexServerClient) {
@@ -9,7 +9,7 @@ export function getConvexServerClient() {
     if (!url) {
       throw new Error("NEXT_PUBLIC_CONVEX_URL is not defined");
     }
-    convexServerClient = new ConvexClient(url);
+    convexServerClient = new ConvexHttpClient(url);
     console.log("Convex server client created for:", url);
   }
   return convexServerClient;
