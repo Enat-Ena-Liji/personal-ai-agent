@@ -3,14 +3,9 @@
   "compilerOptions": {
     "outDir": "./_generated",
     "rootDir": ".",
-    "module": "commonjs",
-    "target": "ES2017",
-    "lib": ["ES2017"],
     "strict": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowJs": true,
     "noEmit": true

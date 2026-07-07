@@ -1,54 +1,59 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+// Simple priority analysis without external API
+function analyzePriority(subject: string, body: string, from: string): 'high' | 'medium' | 'low' {
+  const combinedText = (subject + ' ' + body + ' ' + from).toLowerCase();
+  
+  // High priority keywords
+  const highKeywords = ['urgent', 'asap', 'emergency', 'critical', 'important', 'deadline', 'time-sensitive'];
+  // Low priority keywords
+  const lowKeywords = ['newsletter', 'unsubscribe', 'promotion', 'sale', 'offer', 'discount'];
+  
+  if (highKeywords.some(kw => combinedText.includes(kw))) {
+    return 'high';
+  }
+  if (lowKeywords.some(kw => combinedText.includes(kw))) {
+    return 'low';
+  }
+  return 'medium';
+}
+
+// Simple category analysis without external API
+function categorizeEmail(subject: string, body: string): 'work' | 'personal' | 'social' | 'promotional' | 'spam' {
+  const combinedText = (subject + ' ' + body).toLowerCase();
+  
+  if (combinedText.includes('work') || combinedText.includes('meeting') || combinedText.includes('project')) {
+    return 'work';
+  }
+  if (combinedText.includes('social') || combinedText.includes('linkedin') || combinedText.includes('twitter')) {
+    return 'social';
+  }
+  if (combinedText.includes('promotion') || combinedText.includes('sale') || combinedText.includes('offer')) {
+    return 'promotional';
+  }
+  if (combinedText.includes('spam') || combinedText.includes('unsubscribe')) {
+    return 'spam';
+  }
+  return 'personal';
+}
+
 export const classifyEmail = mutation({
   args: {
-    emailId: v.string(),
+    emailId: v.id("emailDrafts"),
     subject: v.string(),
     body: v.string(),
     from: v.string(),
   },
   handler: async (ctx, args) => {
     // AI-powered classification
-    const priority = await analyzePriority(args.subject, args.body, args.from);
-    const category = await categorizeEmail(args.subject, args.body);
+    const priority = analyzePriority(args.subject, args.body, args.from);
+    const category = categorizeEmail(args.subject, args.body);
     
     await ctx.db.patch(args.emailId, {
       priority,
       category,
-      classifiedAt: Date.now(),
+      updatedAt: Date.now(),
     });
   },
 });
-
-async function analyzePriority(subject: string, body: string, from: string): Promise<'high' | 'medium' | 'low'> {
-  // Use Gemini API for classification
-  const prompt = `
-    Classify this email priority (high/medium/low):
-    Subject: ${subject}
-    From: ${from}
-    Body: ${body.substring(0, 500)}
-    
-    Consider:
-    - High: urgent, action required, time-sensitive
-    - Medium: important but not urgent
-    - Low: newsletter, general information
-    Return only the word.
-  `;
-  
-  // Call Gemini API
-  const response = await callGeminiAPI(prompt);
-  return response.toLowerCase() as 'high' | 'medium' | 'low';
-}
-
-async function categorizeEmail(subject: string, body: string): Promise<string> {
-  const prompt = `
-    Categorize this email (work/personal/social/promotional/spam):
-    Subject: ${subject}
-    Body: ${body.substring(0, 300)}
-    Return only the category.
-  `;
-  
-  const response = await callGeminiAPI(prompt);
-  return response.toLowerCase();
-}
