@@ -259,4 +259,15 @@ export default defineSchema({
     .index("by_user_favorite", ["userId", "isFavorite"])
     .index("by_user_category", ["userId", "category"]),
 
+  followups: defineTable({
+    userId: v.id("users"),
+    emailId: v.optional(v.id("emailDrafts")),
+    followupDate: v.number(),
+    message: v.string(),
+    completed: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_completed", ["userId", "completed"]),
+
 });
