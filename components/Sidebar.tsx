@@ -12,18 +12,12 @@ import {
   Sparkles,
   FileText,
   BarChart3,
-  Clock,
-  Users,
   Zap,
-  Briefcase,
-  Activity,
-  Star,
-  HelpCircle,
   Globe
 } from "lucide-react";
 
 interface NavItem {
-  icon: any;
+  icon: React.ElementType;
   label: string;
   href: string;
   badge?: number;
@@ -78,17 +72,21 @@ const navItems: NavItem[] = [
     label: "Analytics",
     href: "/dashboard/analytics",
   },
-  { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-
-  // Add to navItems
-{ icon: Globe, label: "Platforms", href: "/dashboard/platforms" },
+  {
+    icon: Globe,
+    label: "Platforms",
+    href: "/dashboard/platforms",
+  },
   {
     icon: Settings,
     label: "Settings",
     href: "/dashboard/settings",
   },
-  // Add to navItems
-{ icon: FileText, label: "Email Templates", href: "/dashboard/email-templates" },
+  {
+    icon: FileText,
+    label: "Email Templates",
+    href: "/dashboard/email-templates",
+  },
 ];
 
 export default function Sidebar({ isOpen = true }) {
