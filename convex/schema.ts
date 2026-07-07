@@ -45,6 +45,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index("by_user", ["userId"])
     .index("by_user_platform", ["userId", "platform"])
     .index("by_platform", ["platform"]),
 
@@ -261,7 +262,7 @@ export default defineSchema({
 
   followups: defineTable({
     userId: v.id("users"),
-    emailId: v.optional(v.id("emailDrafts")),
+    emailId: v.optional(v.string()),
     followupDate: v.number(),
     message: v.string(),
     completed: v.boolean(),

@@ -3,7 +3,12 @@ import { mutation, query } from "./_generated/server";
 
 export const connectPlatform = mutation({
   args: {
-    platform: v.string(),
+    platform: v.union(
+      v.literal("gmail"),
+      v.literal("whatsapp"),
+      v.literal("calendar"),
+      v.literal("slack")
+    ),
     accountId: v.string(),
     accountEmail: v.optional(v.string()),
     accountName: v.optional(v.string()),
@@ -40,7 +45,7 @@ export const connectPlatform = mutation({
       // Check if platform already exists
       const platforms = await ctx.db
         .query("connectedPlatforms")
-        .withIndex("by_user", (q) => q.eq("userId", user._id))
+        .withIndex("by_user_platform", (q) => q.eq("userId", user._id))
         .collect();
 
       const existing = platforms.find(p => p.platform === args.platform);
