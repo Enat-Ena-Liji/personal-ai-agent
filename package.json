@@ -1,13 +1,14 @@
-{"type": "commonjs",
+{
+  "type": "module",
   "name": "personal-ai-agent",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:next\" \"npm run dev:socket\"",
+    "dev": "node server.js",
     "dev:next": "next dev --webpack",
     "dev:socket": "node server.js",
     "build": "next build --webpack",
-    "start": "concurrently \"npm run start:next\" \"npm run start:socket\"",
+    "start": "node server.js",
     "start:next": "next start --webpack",
     "start:socket": "node server.js",
     "lint": "next lint",
