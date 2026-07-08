@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaHome, FaUser, FaProjectDiagram, FaCode, FaEnvelope, FaBars, FaTimes, FaMoon, FaSun,FaGithub, FaLinkedin, FaFileDownload, FaArrowUp,FaFilePdf, FaFileWord, FaExternalLinkAlt, FaCheck, FaTimes as FaTimesIcon} from 'react-icons/fa';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FaHome, FaUser, FaProjectDiagram, FaCode, FaEnvelope, FaBars, FaTimes, FaGithub, FaLinkedin, FaFileDownload, FaArrowUp, FaFilePdf, FaFileWord, FaExternalLinkAlt, FaCheck, FaTimes as FaTimesIcon } from 'react-icons/fa';
 import { SiLeetcode, SiHackerrank, SiGmail } from 'react-icons/si';
 import styles from './Header.module.css';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
   const [showResumeDropdown, setShowResumeDropdown] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [notification, setNotification] = useState(null);
@@ -27,7 +26,7 @@ const Header = () => {
   const codingProfiles = [
     { name: 'GitHub', icon: <FaGithub />, url: 'https://github.com/danielayen', color: '#333' },
     { name: 'LeetCode', icon: <SiLeetcode />, url: 'https://leetcode.com/danielayen', color: '#FFA116' },
-    { name: 'HackerRank', icon: <SiHackerrank />,url: 'https://hackerrank.com/danielayen', color: '#2EC866' },
+    { name: 'HackerRank', icon: <SiHackerrank />, url: 'https://hackerrank.com/danielayen', color: '#2EC866' },
     { name: 'LinkedIn', icon: <FaLinkedin />, url: 'https://linkedin.com/in/danielayen', color: '#0077B5' },
     { name: 'Gmail', icon: <SiGmail />, url: 'mailto:daniel.ayen@example.com', color: '#EA4335' },
   ];
@@ -56,19 +55,6 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    setIsOpen(false);
-    setShowResumeDropdown(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setDarkMode(savedTheme === 'dark');
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    }
-  }, []);
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (location.pathname !== '/') {
@@ -82,6 +68,7 @@ const Header = () => {
     }
     navigate(path);
     setIsOpen(false);
+    setShowResumeDropdown(false);
   };
 
   const downloadResume = (format) => {
@@ -91,12 +78,6 @@ const Header = () => {
     });
     setTimeout(() => setNotification(null), 3000);
     setShowResumeDropdown(false);
-  };
-
-  const toggleTheme = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.setAttribute('data-theme', darkMode ? 'light' : 'dark');
-    localStorage.setItem('theme', darkMode ? 'light' : 'dark');
   };
 
   const isActive = (path) => {
@@ -128,7 +109,7 @@ const Header = () => {
               <FaCode className={styles.logoSvg} />
             </div>
             <div className={styles.logoText}>
-              <span className={styles.logoName}>&lt;DaniFolio/&gt;</span>
+              <span className={styles.logoName}><DaniFolio/></span>
               <span className={styles.logoSubtitle}>Full Stack Developer</span>
             </div>
           </motion.div>
@@ -162,22 +143,6 @@ const Header = () => {
 
           {/* Right Side Actions */}
           <div className={styles.headerActions}>
-            {/* Theme Toggle */}
-            <motion.button
-              whileHover={{ scale: 1.1, rotate: 15 }}
-              whileTap={{ scale: 0.9 }}
-              className={styles.themeToggle}
-              onClick={toggleTheme}
-              aria-label={`Switch to ${darkMode ? 'light' : 'dark'} mode`}
-            >
-              <motion.div
-                animate={{ rotate: darkMode ? 0 : 180 }}
-                transition={{ duration: 0.5 }}
-              >
-                {darkMode ? <FaSun /> : <FaMoon />}
-              </motion.div>
-            </motion.button>
-
             {/* Resume Dropdown */}
             <div className={styles.resumeWrapper} ref={dropdownRef}>
               <motion.button
