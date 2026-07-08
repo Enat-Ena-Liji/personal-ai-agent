@@ -7,8 +7,7 @@ import styles from './Home.module.css';
 import profileImage from '../assets/images/8mg/profiles.jpg';
 
 const Home = () => {
-  git addconst [currentTime, setCurrentTime] = useState('');
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState('');
 
   useEffect(() => {
     const updateTime = () => {
@@ -24,22 +23,8 @@ const Home = () => {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.pageYOffset;
-      const windowHeight = window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight;
-      const scrollPercent = (scrollTop / (docHeight - windowHeight)) * 100;
-      setScrollProgress(scrollPercent);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <div className={styles.page}>
-      {/* Hero Section */}
-
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroOverlay} />
@@ -209,8 +194,6 @@ const Home = () => {
           </motion.div>
         </div>  
       </section>
-
-      <ScrollNavigationIndicators />
     </div>
   );
 };

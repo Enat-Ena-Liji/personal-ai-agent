@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProjectCard from '../components/common/ProjectCard';
-import ScrollNavigationIndicators from '../components/common/ScrollNavigationIndicators';
 import {FaCode,FaSearch,FaStar,FaFire,FaCalendarAlt,FaLayerGroup,FaServer,FaMobileAlt,FaDatabase} from 'react-icons/fa';
 import {SiReact,SiNodedotjs} from 'react-icons/si';
 import styles from './Projects.module.css';
@@ -921,10 +920,8 @@ The platform follows Stack Overflow-style conventions and provides an intuitive 
           </motion.div>
         </div>
       </section>
-
-      <ScrollNavigationIndicators />
     </div>
   );
 };
 
-export default Projects; 
+export default Projects;

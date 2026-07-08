@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import SkillIcon from '../components/common/SkillIcon';
-import ScrollNavigationIndicators from '../components/common/ScrollNavigationIndicators';
 import {
   FaCode,
   FaServer,

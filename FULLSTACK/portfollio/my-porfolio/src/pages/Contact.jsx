@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   FaEnvelope,
@@ -16,7 +16,6 @@ import {
   FaGlobe
 } from 'react-icons/fa';
 import { SiGmail } from 'react-icons/si';
-import ScrollNavigationIndicators from '../components/common/ScrollNavigationIndicators';
 import styles from './Contact.module.css';
 
 const Contact = () => {
@@ -96,7 +95,7 @@ const Contact = () => {
         message: ''
       });
       
-    } catch (error) {
+    } catch (err) {
       setFormStatus({
         submitted: true,
         success: false,
@@ -410,8 +409,6 @@ const Contact = () => {
           </div>
         </div>
       </section>
-
-      <ScrollNavigationIndicators />
     </div>
   );
 };  
