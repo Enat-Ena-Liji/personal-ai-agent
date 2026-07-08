@@ -82,10 +82,6 @@ const Skills = () => {
     { name: 'Figma', category: 'design', proficiency: 80, years: 2, projects: 8, icon: <SiFigma />, color: '#F24E1E', description: 'UI/UX design, prototyping, and design systems.' },
   ], []);
 
-  const [skills, setSkills] = useState(allSkills);
-
-
-
   const categoryStats = useMemo(() => {
     const stats = {};
     categories.forEach(cat => {
@@ -232,7 +228,7 @@ const Skills = () => {
           </div>
 
           <div className={styles.interactiveGrid}>
-            {skills.slice(0, 12).map((skill, index) => (
+            {allSkills.slice(0, 12).map((skill, index) => (
               <motion.div
                 key={skill.name}
                 initial={{ opacity: 0, scale: 0 }}
@@ -353,8 +349,6 @@ const Skills = () => {
           </motion.div>
         </div>  
       </section>
-
-      <ScrollNavigationIndicators />
     </div>
   );
 };

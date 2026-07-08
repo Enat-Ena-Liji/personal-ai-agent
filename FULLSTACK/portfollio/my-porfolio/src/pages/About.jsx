@@ -1,6 +1,6 @@
 import React from 'react';
-// import { motion } from 'framer-motion';
-import { 
+import { motion } from 'framer-motion';
+import {
   FaUser, FaUniversity, FaLaptopCode, FaRocket,
   FaLightbulb
 } from 'react-icons/fa';
