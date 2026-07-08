@@ -103,13 +103,13 @@ const Header = () => {
             onClick={scrollToTop}
             role="button"
             tabIndex={0}
-            onKeyPress={(e) => e.key === 'Enter' && scrollToTop()}
+onKeyPress={(e) => e.key === 'Enter' && scrollToTop()}
           >
             <div className={styles.logoIcon}>
               <FaCode className={styles.logoSvg} />
             </div>
             <div className={styles.logoText}>
-              <span className={styles.logoName}><DaniFolio/></span>
+              <span className={styles.logoName}>DaniFolio</span>
               <span className={styles.logoSubtitle}>Full Stack Developer</span>
             </div>
           </motion.div>
