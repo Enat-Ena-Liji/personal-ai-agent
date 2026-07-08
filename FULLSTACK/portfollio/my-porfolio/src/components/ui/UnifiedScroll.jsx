@@ -14,6 +14,8 @@ const UnifiedScroll = () => {
   const rafIdRef = useRef(null);
   const lastScrollYRef = useRef(0);
   const scrollTimeoutRef = useRef(null);
+  const navigationLockRef = useRef(false);
+  const lastWheelTimeRef = useRef(0);
 
   // Define all pages/sections with their labels
   const sections = [
@@ -70,10 +72,32 @@ const UnifiedScroll = () => {
     });
   }, [smoothProgress]);
 
-  // Navigation with smooth scroll
-  const handleNavigation = useCallback((path) => {
+  // Navigation with scroll position control
+  const handleNavigation = useCallback((path, scrollToTop = true) => {
+    // Prevent multiple rapid navigations
+    if (navigationLockRef.current) return;
+    
+    navigationLockRef.current = true;
+    
     navigate(path);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Scroll to top or bottom based on navigation direction
+    setTimeout(() => {
+      if (scrollToTop) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // Scroll to bottom of the page
+        window.scrollTo({ 
+          top: document.documentElement.scrollHeight, 
+          behavior: 'smooth' 
+        });
+      }
+      
+      // Release lock after scroll completes
+      setTimeout(() => {
+        navigationLockRef.current = false;
+      }, 1000);
+    }, 100);
   }, [navigate]);
 
   // Scroll to top
@@ -87,29 +111,37 @@ const UnifiedScroll = () => {
   // Scroll to next section
   const handleNextSection = useCallback(() => {
     if (nextSection) {
-      handleNavigation(nextSection.path);
+      handleNavigation(nextSection.path, true);
     }
   }, [nextSection, handleNavigation]);
 
   // Scroll to previous section
   const handlePrevSection = useCallback(() => {
     if (prevSection) {
-      handleNavigation(prevSection.path);
+      handleNavigation(prevSection.path, false);
     }
   }, [prevSection, handleNavigation]);
 
-  // Handle wheel events for page navigation
+  // Handle wheel events for page navigation with debouncing
   const handleWheel = useCallback((e) => {
+    const now = Date.now();
+    const timeSinceLastWheel = now - lastWheelTimeRef.current;
+    
+    // Throttle wheel events to prevent rapid page jumps (min 300ms between navigations)
+    if (timeSinceLastWheel < 300) return;
+    
     // Only trigger navigation at top or bottom of page
     const atTop = window.scrollY < 20;
     const atBottom = (document.documentElement.scrollHeight - window.innerHeight - window.scrollY) < 20;
 
     if (e.deltaY > 0 && atBottom && nextSection) {
       e.preventDefault();
-      handleNavigation(nextSection.path);
+      lastWheelTimeRef.current = now;
+      handleNavigation(nextSection.path, true);
     } else if (e.deltaY < 0 && atTop && prevSection) {
       e.preventDefault();
-      handleNavigation(prevSection.path);
+      lastWheelTimeRef.current = now;
+      handleNavigation(prevSection.path, false);
     }
   }, [nextSection, prevSection, handleNavigation]);
 
@@ -164,7 +196,7 @@ const UnifiedScroll = () => {
           <div
             key={section.path}
             className={`${styles.sectionDot} ${index === activeSection ? styles.active : ''}`}
-            onClick={() => handleNavigation(section.path)}
+            onClick={() => handleNavigation(section.path, true)}
             title={section.label}
           >
             <span className={styles.sectionLabel}>{section.label}</span>

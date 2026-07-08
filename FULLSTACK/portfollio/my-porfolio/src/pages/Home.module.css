@@ -23,8 +23,8 @@
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(100, 255, 218, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(0, 210, 255, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, rgba(0, 122, 204, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 153, 255, 0.08) 0%, transparent 50%);
 }
 
 .heroOverlay {
@@ -33,7 +33,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(10, 25, 47, 0.6);
+  background: rgba(255, 255, 255, 0.6);
   z-index: 1;
 }
 
@@ -61,8 +61,8 @@
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-lg);
-  background: rgba(100, 255, 218, 0.1);
-  border: 1px solid rgba(100, 255, 218, 0.2);
+  background: rgba(0, 122, 204, 0.1);
+  border: 1px solid rgba(0, 122, 204, 0.2);
   border-radius: var(--radius-full);
   font-size: 0.95rem;
   font-weight: 500;
@@ -138,10 +138,10 @@
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid rgba(100, 255, 218, 0.25);
+  border: 3px solid rgba(0, 122, 204, 0.25);
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 0 10px rgba(100, 255, 218, 0.12);
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 0 0 10px rgba(0, 122, 204, 0.12);
   transition: all 0.45s ease;
   position: relative;
   z-index: 2;
@@ -150,8 +150,8 @@
 .profileImage:hover {
   transform: scale(1.04);
   box-shadow: 
-    0 40px 80px -20px rgba(0, 0, 0, 0.6),
-    0 0 0 14px rgba(100, 255, 218, 0.18);
+    0 40px 80px -20px rgba(0, 0, 0, 0.25),
+    0 0 0 14px rgba(0, 122, 204, 0.18);
 }
 
 .imageFrame {
@@ -177,13 +177,13 @@
 
 .profileContainer::before {
   inset: -30px;
-  border: 2px solid rgba(100, 255, 218, 0.5);
+  border: 2px solid rgba(0, 122, 204, 0.5);
   animation: rotate 30s linear infinite;
 }
 
 .profileContainer::after {
   inset: -50px;
-  border: 3px solid rgba(0, 210, 255, 0.3);
+  border: 3px solid rgba(0, 153, 255, 0.3);
   animation: rotate 40s linear infinite reverse;
 }
 
@@ -198,15 +198,15 @@
   position: absolute;
   width: 60px;
   height: 60px;
-  background: rgba(10, 25, 47, 0.9);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(100, 255, 218, 0.2);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 122, 204, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   color: var(--primary);
   transition: all var(--transition-base);
 }
@@ -214,7 +214,7 @@
 .badge:hover {
   border-color: var(--primary);
   transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(100, 255, 218, 0.4);
+  box-shadow: 0 0 20px rgba(0, 122, 204, 0.4);
 }
 
 .react { top: 10%; left: 10%; }
@@ -277,12 +277,13 @@
 }
 
 .ctaCard {
-  background: rgba(100, 255, 218, 0.05);
+  background: rgba(0, 122, 204, 0.03);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: var(--space-2xl);
   max-width: 900px;
   margin: 0 auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .ctaTitle {
