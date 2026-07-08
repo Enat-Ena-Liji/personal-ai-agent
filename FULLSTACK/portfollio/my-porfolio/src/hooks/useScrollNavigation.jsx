@@ -37,7 +37,7 @@ const useScrollNavigation = () => {
       navigate(routes[currentIndex - 1].path);
       window.scrollTo({ top: 0, behavior: 'instant' });
       
-      setTimeout(() => {
+      setTimeout(() => {z
         navigationCooldownRef.current = false;
       }, 800);
     }

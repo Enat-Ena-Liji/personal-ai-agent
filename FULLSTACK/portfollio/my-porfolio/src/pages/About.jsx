@@ -7,7 +7,7 @@ import {
 import styles from './About.module.css';
 import profilePic from '../assets/images/8mg/about-pro.png';
 
-const About = () => {
+const About = () => {z
   return ( 
     <div className={styles.page}>
       {/* Hero Section */}

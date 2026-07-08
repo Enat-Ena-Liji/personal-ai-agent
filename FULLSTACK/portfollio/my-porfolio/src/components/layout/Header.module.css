@@ -8,15 +8,15 @@
   z-index: var(--z-header);
   padding: 1.2rem 2rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-color);
+  background: transparent;
+  backdrop-filter: blur(0px);
 }
 
 .scrolled {
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(10, 25, 47, 0.95);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--border-color);
   padding: 0.8rem 2rem;
 }
 
@@ -60,7 +60,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  color: white;
+  color: var(--bg-primary);
 }
 
 .logoSvg {
@@ -105,7 +105,7 @@
 .navItem {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   padding: 0.8rem 1.5rem;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -132,7 +132,7 @@
 
 .active {
   color: var(--primary);
-  background: rgba(0, 122, 204, 0.1);
+  background: rgba(100, 255, 218, 0.15);
 }
 
 .navIcon {
@@ -157,9 +157,32 @@
   gap: var(--space-md);
 }
 
-/* Theme Toggle - Light mode only, hidden */
+/* Theme Toggle */
 .themeToggle {
-  display: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all var(--transition-base);
+  outline: none;
+}
+
+.themeToggle:hover {
+  background: var(--primary);
+  color: var(--bg-primary);
+  transform: rotate(15deg);
+}
+
+.themeToggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* Resume Dropdown */
@@ -173,7 +196,7 @@
   gap: var(--space-sm);
   padding: 0.6rem 1.2rem;
   background: var(--primary-gradient);
-  color: white;
+  color: var(--bg-primary);
   border: none;
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -181,16 +204,15 @@
   cursor: pointer;
   transition: all var(--transition-base);
   outline: none;
-  box-shadow: 0 4px 15px rgba(0, 122, 204, 0.25);
 }
 
 .resumeBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 122, 204, 0.35);
+  box-shadow: 0 6px 20px var(--primary-glow);
 }
 
 .resumeBtn:focus-visible {
-  outline: 2px solid white;
+  outline: 2px solid var(--bg-primary);
   outline-offset: 2px;
 }
 
@@ -198,13 +220,13 @@
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(10, 25, 47, 0.98);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 0.5rem;
   min-width: 180px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   z-index: 1001;
 }
 
@@ -280,7 +302,7 @@
 
 .mobileToggle:hover {
   background: var(--primary);
-  color: white;
+  color: var(--bg-primary);
 }
 
 .mobileToggle:focus-visible {
@@ -291,7 +313,7 @@
 /* Mobile Menu */
 .mobileMenu {
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(10, 25, 47, 0.98);
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--border-color);
 }
@@ -305,7 +327,7 @@
   padding: var(--space-md);
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   gap: var(--space-md);
@@ -399,23 +421,22 @@
   gap: var(--space-sm);
   padding: var(--space-md);
   background: var(--primary-gradient);
-  color: white;
+  color: var(--bg-primary);
   border: none;
   border-radius: var(--radius-md);
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
   outline: none;
-  box-shadow: 0 4px 15px rgba(0, 122, 204, 0.25);
 }
 
 .mobileResumeBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 122, 204, 0.35);
+  box-shadow: 0 6px 20px var(--primary-glow);
 }
 
 .mobileResumeBtn:focus-visible {
-  outline: 2px solid white;
+  outline: 2px solid var(--bg-primary);
   outline-offset: 2px;
 }
 
@@ -441,7 +462,7 @@
   border-radius: 50%;
   background: var(--primary-gradient);
   border: none;
-  color: white;
+  color: var(--bg-primary);
   font-size: 1.2rem;
   cursor: pointer;
   z-index: 999;
@@ -449,17 +470,17 @@
   align-items: center;
   justify-content: center;
   transition: all var(--transition-base);
-  box-shadow: 0 4px 20px rgba(0, 122, 204, 0.3);
+  box-shadow: 0 4px 20px var(--primary-glow);
   outline: none;
 }
 
 .scrollTopBtn:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 122, 204, 0.4);
+  box-shadow: 0 8px 25px rgba(100, 255, 218, 0.4);
 }
 
 .scrollTopBtn:focus-visible {
-  outline: 2px solid white;
+  outline: 2px solid var(--bg-primary);
   outline-offset: 2px;
 }
 
@@ -492,10 +513,10 @@
   transform: translateX(-50%);
   padding: var(--space-md) var(--space-xl);
   border-radius: var(--radius-md);
-  color: white;
+  color: var(--bg-primary);
   font-weight: 500;
   z-index: var(--z-toast);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .notificationToast.success {
@@ -518,7 +539,7 @@
   bottom: 2rem;
   left: 2rem;
   padding: var(--space-sm) var(--space-md);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(10, 25, 47, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -529,7 +550,7 @@
 
 .keyboardHint kbd {
   padding: 0.2rem 0.4rem;
-  background: var(--bg-card);
+  background: var(--bg-card-hover);
   border-radius: var(--radius-sm);
   color: var(--primary);
 }
