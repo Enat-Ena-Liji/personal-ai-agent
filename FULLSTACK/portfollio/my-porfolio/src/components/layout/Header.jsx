@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaHome, FaUser, FaProjectDiagram, FaCode, FaEnvelope, FaBars, FaTimes, FaMoon, FaSun,FaGithub, FaLinkedin, FaFileDownload, FaArrowUp,FaFilePdf, FaFileWord, FaExternalLinkAlt, FaCheck, FaTimes as FaTimesIcon} from 'react-icons/fa';
+import { 
+  FaHome, FaUser, FaProjectDiagram, FaCode, 
+  FaEnvelope, FaBars, FaTimes, FaMoon, FaSun,
+  FaGithub, FaLinkedin, FaFileDownload, FaArrowUp,
+  FaFilePdf, FaFileWord, FaExternalLinkAlt, FaCheck, FaTimes as FaTimesIcon
+} from 'react-icons/fa';
 import { SiLeetcode, SiHackerrank, SiGmail } from 'react-icons/si';
 import styles from './Header.module.css';
 
@@ -27,7 +32,7 @@ const Header = () => {
   const codingProfiles = [
     { name: 'GitHub', icon: <FaGithub />, url: 'https://github.com/danielayen', color: '#333' },
     { name: 'LeetCode', icon: <SiLeetcode />, url: 'https://leetcode.com/danielayen', color: '#FFA116' },
-    { name: 'HackerRank', icon: <SiHackerrank />,url: 'https://hackerrank.com/danielayen', color: '#2EC866' },
+    { name: 'HackerRank', icon: <SiHackerrank />, url: 'https://hackerrank.com/danielayen', color: '#2EC866' },
     { name: 'LinkedIn', icon: <FaLinkedin />, url: 'https://linkedin.com/in/danielayen', color: '#0077B5' },
     { name: 'Gmail', icon: <SiGmail />, url: 'mailto:daniel.ayen@example.com', color: '#EA4335' },
   ];

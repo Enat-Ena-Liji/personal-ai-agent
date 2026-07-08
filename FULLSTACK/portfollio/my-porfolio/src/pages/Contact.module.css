@@ -20,8 +20,8 @@
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 50%, rgba(0, 122, 204, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 50%, rgba(0, 153, 255, 0.08) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(100, 255, 218, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(0, 210, 255, 0.1) 0%, transparent 50%);
 }
 
 .heroContent {
@@ -71,7 +71,6 @@
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .methodCard:hover,
@@ -79,7 +78,6 @@
   background: var(--bg-card-hover);
   border-color: var(--method-color, var(--primary));
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 122, 204, 0.12);
 }
 
 .methodCard::before {
@@ -102,7 +100,7 @@
 .methodIcon {
   width: 60px;
   height: 60px;
-  background: rgba(0, 122, 204, 0.1);
+  background: rgba(var(--method-color-rgb), 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -130,7 +128,7 @@
 
 .methodAction {
   padding: var(--space-sm) var(--space-md);
-  background: rgba(0, 122, 204, 0.1);
+  background: rgba(var(--method-color-rgb), 0.1);
   border-radius: var(--radius-full);
   font-size: 0.85rem;
   font-weight: 500;
@@ -141,7 +139,7 @@
 /* Main Section */
 .main {
   padding: var(--space-3xl) 0;
-  background: rgba(248, 250, 252, 0.5);
+  background: rgba(10, 25, 47, 0.5);
 }
 
 .grid {
@@ -156,7 +154,6 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .sectionHeader {
@@ -218,7 +215,7 @@
 .formTextarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
+  box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
 }
 
 .formInput::placeholder,
@@ -238,7 +235,7 @@
   gap: var(--space-sm);
   padding: var(--space-md) var(--space-xl);
   background: var(--primary-gradient);
-  color: white;
+  color: var(--bg-primary);
   border: none;
   border-radius: var(--radius-md);
   font-size: 1rem;
@@ -246,12 +243,11 @@
   cursor: pointer;
   transition: all var(--transition-base);
   margin-top: var(--space-md);
-  box-shadow: 0 4px 15px rgba(0, 122, 204, 0.25);
 }
 
 .submitBtn:hover:not(:disabled) {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 122, 204, 0.35);
+  box-shadow: 0 10px 20px var(--primary-glow);
 }
 
 .submitBtn:disabled {
@@ -262,7 +258,7 @@
 .spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid white;
+  border: 2px solid var(--bg-primary);
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -295,7 +291,6 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .infoCard {
@@ -346,7 +341,7 @@
 .infoIcon {
   width: 48px;
   height: 48px;
-  background: rgba(0, 122, 204, 0.1);
+  background: rgba(100, 255, 218, 0.1);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -451,7 +446,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(248, 250, 252, 0.9);
+  background: rgba(10, 25, 47, 0.7);
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
@@ -513,7 +508,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  color: white;
+  color: var(--bg-primary);
   margin-bottom: var(--space-md);
   animation: bounce 2s ease-in-out infinite;
 }

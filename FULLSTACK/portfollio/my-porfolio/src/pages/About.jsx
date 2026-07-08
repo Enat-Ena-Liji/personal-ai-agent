@@ -1,13 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
+import { 
   FaUser, FaUniversity, FaLaptopCode, FaRocket,
   FaLightbulb
 } from 'react-icons/fa';
+import ScrollNavigationIndicators from '../components/common/ScrollNavigationIndicators';
 import styles from './About.module.css';
 import profilePic from '../assets/images/8mg/about-pro.png';
 
-const About = () => {z
+const About = () => {
   return ( 
     <div className={styles.page}>
       {/* Hero Section */}
@@ -148,6 +149,8 @@ const About = () => {z
           </motion.div>
         </div>
       </section>
+
+      <ScrollNavigationIndicators />
     </div>
   );
 }; 

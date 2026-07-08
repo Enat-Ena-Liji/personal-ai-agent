@@ -20,8 +20,8 @@
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 30% 50%, rgba(0, 122, 204, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 70% 50%, rgba(0, 153, 255, 0.08) 0%, transparent 50%);
+    radial-gradient(circle at 30% 50%, rgba(100, 255, 218, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 70% 50%, rgba(0, 210, 255, 0.1) 0%, transparent 50%);
 }
 
 .heroContent {
@@ -88,7 +88,7 @@
 .searchInput:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
+  box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
 }
 
 .categorySelect {
@@ -126,7 +126,7 @@
 /* Category Breakdown */
 .breakdown {
   padding: var(--space-3xl) 0;
-  background: rgba(248, 250, 252, 0.5);
+  background: rgba(10, 25, 47, 0.5);
 }
 
 .breakdownGrid {
@@ -141,13 +141,11 @@
   border-radius: 12px;
   padding: var(--space-lg);
   transition: all var(--transition-base);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .breakdownCard:hover {
   border-color: var(--category-color, var(--primary));
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 122, 204, 0.12);
 }
 
 .breakdownHeader {
@@ -202,7 +200,7 @@
 
 .progressBar {
   height: 8px;
-  background: rgba(0, 122, 204, 0.1);
+  background: rgba(100, 255, 218, 0.1);
   border-radius: var(--radius-sm);
   overflow: hidden;
 }
@@ -225,7 +223,7 @@
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm);
-  background: rgba(0, 122, 204, 0.05);
+  background: rgba(100, 255, 218, 0.05);
   border-radius: var(--radius-md);
 }
 
@@ -257,7 +255,7 @@
 
 .skillTag {
   padding: 0.4rem 0.8rem;
-  background: rgba(0, 122, 204, 0.1);
+  background: rgba(100, 255, 218, 0.1);
   color: var(--primary);
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
@@ -266,7 +264,7 @@
 
 .moreSkills {
   padding: 0.4rem 0.8rem;
-  background: rgba(0, 122, 204, 0.05);
+  background: rgba(100, 255, 218, 0.05);
   border: 1px dashed var(--border-color);
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
@@ -308,7 +306,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(248, 250, 252, 0.95);
+  background: rgba(10, 25, 47, 0.95);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
@@ -326,7 +324,7 @@
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
 .modalHeader {
@@ -385,7 +383,7 @@
 
 .modalClose:hover {
   background: var(--primary);
-  color: white;
+  color: var(--bg-primary);
   transform: rotate(90deg);
 }
 
@@ -460,7 +458,7 @@
 /* CTA Section */
 .cta {
   padding: var(--space-3xl) 0;
-  background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(226, 232, 240, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(10, 25, 47, 0.9) 0%, rgba(2, 12, 27, 0.9) 100%);
 }
 
 .ctaContent {
