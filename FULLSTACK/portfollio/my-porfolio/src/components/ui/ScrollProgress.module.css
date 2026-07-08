@@ -1,0 +1,67 @@
+@import '../../styles/variables.css';
+
+/* Progress Bar */
+.bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary-gradient);
+  transform-origin: 0%;
+  z-index: 9999;
+}
+
+/* Progress Circle */
+.circle {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 50px;
+  height: 50px;
+  z-index: 999;
+  cursor: pointer;
+  background: rgba(10, 25, 47, 0.8);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+}
+
+.circle:hover {
+  transform: scale(1.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.circle svg {
+  width: 50px;
+  height: 50px;
+  transform: rotate(-90deg);
+}
+
+.percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .circle {
+    bottom: 1rem;
+    left: 1rem;
+    width: 45px;
+    height: 45px;
+  }
+}
+
+@media (max-width: 640px) {
+  .circle {
+    display: none;
+  }
+}

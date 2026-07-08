@@ -1,0 +1,544 @@
+@import '../../styles/variables.css';
+
+.wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Main Icon Container */
+.container {
+  position: relative;
+  width: var(--container-size, 80px);
+  height: var(--container-size, 80px);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.small {
+  --container-size: 60px;
+}
+
+.medium {
+  --container-size: 80px;
+}
+
+.large {
+  --container-size: 100px;
+}
+
+.xlarge {
+  --container-size: 120px;
+}
+
+.interactive:hover {
+  transform: translateY(-5px);
+}
+
+/* Glow Effect */
+.glow {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(circle, var(--skill-color, var(--primary)) 0%, transparent 70%);
+  opacity: 0.3;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* Inner Container */
+.inner {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  background: rgba(10, 25, 47, 0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  border: 2px solid var(--skill-color, var(--primary));
+  box-shadow: 
+    0 0 20px rgba(var(--skill-color-rgb, 97, 218, 251), 0.3),
+    inset 0 0 20px rgba(var(--skill-color-rgb, 97, 218, 251), 0.1);
+}
+
+.content {
+  font-size: calc(var(--container-size, 80px) * 0.4);
+  color: var(--skill-color, var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Progress Ring */
+.progressRing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotate(-90deg);
+}
+
+.progressRingBackground {
+  fill: none;
+  stroke: rgba(100, 255, 218, 0.1);
+  stroke-width: 3;
+}
+
+.progressRingForeground {
+  fill: none;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+}
+
+/* Level Badge */
+.levelBadge {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #6BCF7F;
+  color: var(--bg-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  border: 2px solid var(--bg-primary);
+}
+
+.small .levelBadge {
+  width: 20px;
+  height: 20px;
+  font-size: 0.6rem;
+}
+
+.large .levelBadge {
+  width: 28px;
+  height: 28px;
+  font-size: 0.8rem;
+}
+
+.xlarge .levelBadge {
+  width: 32px;
+  height: 32px;
+  font-size: 0.9rem;
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 25, 47, 0.95);
+  color: var(--text-primary);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid rgba(10, 25, 47, 0.95);
+}
+
+/* Label (for non-interactive) */
+.label {
+  margin-top: var(--space-sm);
+  text-align: center;
+}
+
+.name {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.level {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 25, 47, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--space-md);
+}
+
+.modal {
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 20px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.modalClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  z-index: 2;
+}
+
+.modalClose:hover {
+  background: var(--primary);
+  color: var(--bg-primary);
+  transform: rotate(90deg);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modalIcon {
+  font-size: 3rem;
+}
+
+.modalTitle h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.modalCategory {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: var(--bg-card);
+  color: var(--primary);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progressDetails {
+  padding: var(--space-xl);
+}
+
+.progressInfo {
+  margin-bottom: var(--space-xl);
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.progressLevel {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.progressPercentage {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.progressBarContainer {
+  height: 10px;
+  background: rgba(100, 255, 218, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 1s ease;
+}
+
+/* Timeline */
+.timeline {
+  margin-bottom: var(--space-xl);
+}
+
+.timeline h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.timelineBar {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  padding: var(--space-md) 0;
+}
+
+.timelineBar::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(100, 255, 218, 0.2);
+  transform: translateY(-50%);
+}
+
+.timelinePoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.timelineMarker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-bottom: var(--space-sm);
+  border: 2px solid var(--bg-primary);
+  transition: all var(--transition-base);
+}
+
+.timelineMarker.active {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px currentColor;
+}
+
+.timelineLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Related Projects */
+.relatedProjects {
+  margin-bottom: var(--space-xl);
+}
+
+.relatedProjects h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.projectsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.projectChip {
+  padding: 0.5rem 1rem;
+  background: var(--bg-card);
+  color: var(--primary);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.projectChip:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Description */
+.description {
+  margin-bottom: var(--space-xl);
+}
+
+.description h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.description p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Metrics */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.metric {
+  text-align: center;
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.metricValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: var(--space-sm);
+}
+
+.metricLabel {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: var(--space-md);
+  padding: 0 var(--space-xl) var(--space-xl);
+}
+
+.actionBtn {
+  flex: 1;
+  padding: 0.9rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: none;
+}
+
+.viewProjects {
+  background: var(--primary-gradient);
+  color: var(--bg-primary);
+}
+
+.viewProjects:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px var(--primary-glow);
+}
+
+.learnMore {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--border-color);
+}
+
+.learnMore:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Scrollbar */
+.modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal::-webkit-scrollbar-track {
+  background: rgba(100, 255, 218, 0.05);
+  border-radius: var(--radius-sm);
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: var(--primary-gradient);
+  border-radius: var(--radius-sm);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .modal {
+    max-height: 95vh;
+  }
+  
+  .modalHeader {
+    padding: var(--space-lg);
+  }
+  
+  .progressDetails {
+    padding: var(--space-lg);
+  }
+  
+  .actions {
+    flex-direction: column;
+    padding: 0 var(--space-lg) var(--space-lg);
+  }
+  
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .timelineBar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-md);
+  }
+}
+
+/* Animation */
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(var(--skill-color-rgb, 97, 218, 251), 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(var(--skill-color-rgb, 97, 218, 251), 0.5);
+  }
+}
+
+.interactive:hover .inner {
+  animation: pulse-glow 2s ease-in-out infinite;
+}

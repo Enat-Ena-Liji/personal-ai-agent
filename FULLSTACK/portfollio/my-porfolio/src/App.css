@@ -1,0 +1,61 @@
+/* Global Resets & Variables */
+:root {
+  --bg-navy: #0a192f;
+  --bg-light-navy: #112240;
+  --cyan: #64ffda;
+  --blue: #00d2ff;
+  --text-main: #e6f1ff;
+  --text-muted: #8892b0;
+  --text-dark: #a8b2d1;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-navy);
+  color: var(--text-main);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.App { min-height: 100vh; display: flex; flex-direction: column; }
+.main-content { flex: 1; }
+.container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-navy); }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--cyan), var(--blue)); border-radius: 4px; }
+
+/* Global Typography & Utility Classes */
+.highlight { color: var(--cyan); position: relative; display: inline-block; }
+.highlight::after {
+  content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 8px;
+  background: rgba(100, 255, 218, 0.2); border-radius: 4px; z-index: -1;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem;
+  background: rgba(100, 255, 218, 0.1); border: 1px solid rgba(100, 255, 218, 0.2);
+  border-radius: 50px; font-size: 0.95rem; font-weight: 500; color: var(--cyan);
+  margin-bottom: 1.5rem;
+}
+
+.section-title { font-size: 3rem; text-align: center; margin-bottom: 4rem; color: var(--text-main); }
+.section-header { text-align: center; margin-bottom: 3rem; }
+
+/* Global Buttons */
+.btn {
+  padding: 1rem 2.5rem; border-radius: 8px; font-size: 1rem; font-weight: 600;
+  text-decoration: none; transition: all 0.3s ease; display: inline-flex;
+  align-items: center; gap: 0.5rem; cursor: pointer; border: none;
+}
+.btn-primary { background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%); color: var(--bg-navy); }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(100, 255, 218, 0.3); }
+.btn-outline, .btn-secondary { border: 2px solid var(--cyan); color: var(--cyan); background: transparent; }
+.btn-outline:hover, .btn-secondary:hover { background: rgba(100, 255, 218, 0.1); transform: translateY(-3px); }
+
+/* Common Page Padding */
+.page-section { padding-top: 8rem; padding-bottom: 4rem; min-height: 100vh; position: relative; }
